@@ -1,11 +1,11 @@
-# my-react-vite-app
+# athena-auto-trader
 
 This is a React application built using Vite. It serves as a template for creating modern web applications with a fast development experience.
 
 ## Project Structure
 
 ```
-my-react-vite-app
+athena-auto-trader
 ├── src
 │   ├── App.jsx               # Main application component
 │   ├── main.jsx              # Entry point of the application
@@ -28,7 +28,7 @@ To get started with this project, follow these steps:
 1. **Clone the repository:**
    ```
    git clone <repository-url>
-   cd my-react-vite-app
+   cd athena-auto-trader
    ```
 
 2. **Install dependencies:**

@@ -5,7 +5,7 @@ import ExampleComponent from './components/ExampleComponent';
 function App() {
     return (
         <div className="App">
-            <h1>Welcome to My React Vite App</h1>
+            <h1>Welcome to athena-auto-trader</h1>
             <ExampleComponent />
         </div>
     );
