@@ -4,16 +4,16 @@ import fs from 'fs'; // Import the fs module for file operations
 
 import { MongoClient } from 'mongodb';
 
-const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const uri= "mongodb+srv://AthenaAutoTrader:hackUPC2025winner!@athena.4buv5xy.mongodb.net/";
 const client = new MongoClient(uri);
 const dbName = 'stock_db';
 
 async function getStockData(tradeObject, startDate, endDate) {
-    if (!tradeObject?.Ticker || !startDate || !endDate) {
+    if (!tradeObject || !startDate || !endDate) {
         throw new Error('tradeObject with Ticker, startDate, and endDate are required');
     }
 
-    const ticker = tradeObject.Ticker;
+    const ticker = tradeObject;
     const collectionName = `${ticker}_data`;
 
     const start = new Date(startDate);
