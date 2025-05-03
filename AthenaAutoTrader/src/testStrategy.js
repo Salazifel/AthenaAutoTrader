@@ -5,6 +5,7 @@ import TradeStrategy from './trading_objects/TradeStrategy.js';
 import TradeStrategyCollector from './trading_objects/TradeStrategyCollector.js';
 import Analyzer from './trading_objects/Analyzer.js'; // Add this missing import
 import fs from 'fs'; // Import the fs module for file operations
+import { json } from 'stream/consumers';
 
 // Test script
 const testTradeStrategy = () => {
@@ -45,11 +46,12 @@ const testTradeStrategy = () => {
 
     console.log(tradeStrategyCollector.createJSON());
     // save the json to a file
-    fs.writeFile('tradeStrategy.json', JSON.stringify(tradeStrategyCollector.createJSON(), null, 2), (err) => {
+    const jsonString = tradeStrategyCollector.createJSON();
+    fs.writeFileSync('tradeStrategy.json', jsonString, 'utf8', (err) => {
         if (err) {
             console.error('Error writing to file', err);
         } else {
-            console.log('Trade strategy saved to tradeStrategy.json');
+            console.log('File has been written successfully');
         }
     });
 

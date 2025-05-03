@@ -6,6 +6,7 @@ import { IterationType } from './TradeStrategy.js'; // Assuming you have an Iter
 import fs from 'fs'; // Import the fs module for file operations
 import { getCurrentPrice } from '../stock_data_collector/stockAPI.js'; // Assuming you have a function to get the current price
 import { get } from 'http';
+import { closeConnection } from '../stock_data_collector/stockAPI.js'; // Assuming you have a function to close the connection
 
 class TradeStrategyCollector {
   constructor() {
@@ -131,6 +132,10 @@ class TradeStrategyCollector {
                 }
             });
 
+            // close the connection to the database
+            await closeConnection();
+            console.log('MongoDB connection closed.');
+
         } catch (error) {
             console.error('Error executing trade strategy:', error.message);
         }
@@ -154,11 +159,7 @@ class TradeStrategyCollector {
     }
 
     createJSON() {
-        return JSON.stringify({
-            tradeStrategies: this.tradeStrategies.map(strategy => strategy.toJSON ? strategy.toJSON() : strategy),
-            analyzer: this.analyzer ? (this.analyzer.toJSON ? this.analyzer.toJSON() : this.analyzer) : null,
-            initialBudget: this.initialBudget
-        }, null, 2);
+        return JSON.stringify(this);
     }
 }
 

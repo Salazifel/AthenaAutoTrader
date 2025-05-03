@@ -46,14 +46,21 @@ async function getStockData(tradeObject, startDate, endDate) {
     }
 }
 
-process.on('SIGINT', async () => {
-    console.log('Shutting down gracefully...');
+async function closeConnection() {
     if (isConnected) {
         await client.close();
+        isConnected = false;
         console.log('MongoDB connection closed.');
     }
+}
+
+// when ctrl +c is pressed, close the connection
+process.on('SIGINT', async () => {
+    await closeConnection();
     process.exit(0);
 });
+
+export { closeConnection };
 
 export { getStockData };
 
