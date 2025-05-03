@@ -5,6 +5,7 @@ class Analyzer {
         this.interestRate = interestRate; // Interest rate for comparison
         this.costPerTrade = costPerTrade; // Cost per trade for the analysis
         this.taxOnProfit = taxOnProfit; // Tax on profit for the analysis
+        
         this.outputLog = [];
         this.otherAnalyzers = [];
         

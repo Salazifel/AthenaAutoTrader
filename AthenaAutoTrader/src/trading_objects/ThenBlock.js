@@ -27,6 +27,15 @@ class ThenBlock {
         this.unitType = unitType;
         this.unitValue = unitValue;
     }
+
+    execute(tradeStrategyCollector, tradeObject, currentTime, initialBudget, currentPrice) {
+        if (action === ActionEnum.BUY) {
+        {
+            //if (initialBudget )
+        }
+        tradeStrategyCollector.getAnalyzer().appendToOutputLog(`Executing action: ${this.action} with unitType: ${this.unitType} and unitValue: ${this.unitValue} for tradeObject: ${tradeObject.getShareName()} at time: ${currentTime} at the price of ${currentPrice}`);
+    }
+}
 }
 
 export { ActionEnum, UnitTypeEnum };
