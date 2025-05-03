@@ -1,4 +1,4 @@
-import fs from 'fs';
+/*import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 // Path to the JSON file
@@ -124,4 +124,4 @@ async function createDatabase() {
 
 createDatabase();
 
-export { getStockEntry, createDatabase, getTrendingStocks, getTrendingETFs };
+export { getStockEntry, createDatabase, getTrendingStocks, getTrendingETFs };*/
