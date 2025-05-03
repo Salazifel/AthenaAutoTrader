@@ -4,11 +4,11 @@ import ThenBlock from './ThenBlock.js';
 
 const IterationType = Object.freeze({
     ONCE: 'once',
-    ALWAYS: 'always',
     PER_MINUTE: 'per_minute',
     PER_HOUR: 'per_hour',
     PER_DAY: 'per_day',
     PER_WEEK: 'per_week',
+    PER_MONTH: 'per_month',
 });
 
 class TradeStrategy {
