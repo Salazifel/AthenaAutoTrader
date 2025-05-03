@@ -37,7 +37,7 @@ async def gemini(request: Request):
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")
 
     def call_gemini():
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key={API_KEY}"
         payload = {"contents": [{"parts": [{"text": prompt}]}]}
         response = requests.post(
             url,

@@ -72,7 +72,7 @@ export default function App() {
           flexDirection: "column"
         }}>
           <h3 style={{ margin: "0 0 1rem 0", color: "#FFF", fontSize: "16px" }}>AI Analysis</h3>
-          <button onClick={handleClick}>Ask Gemini</button>
+          <button onClick={handleClick}>Analyze tradingbot</button>
           <div style={{ flex: 1, overflowY: "auto" }}>
             <pre style={{ 
               color: "#0BDF86", 
