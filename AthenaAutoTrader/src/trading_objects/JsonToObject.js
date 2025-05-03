@@ -1,11 +1,11 @@
-/*import TradeStrategyCollector from './TradeStrategyCollector.js';
+import TradeStrategyCollector from './TradeStrategyCollector.js';
 import TradeStrategy from './TradeStrategy.js';
 import Analyzer from './Analyzer.js';
+import fs from 'fs'; // Import the fs module for file operations
 
 export function parseJSONToTradeStrategyCollector(jsonString) {
     const data = JSON.parse(jsonString);
 
-    const tradeStrategyCollector = new TradeStrategyCollector();
 
     // Reconstruct trade strategies
     if (Array.isArray(data.tradeStrategies)) {
@@ -29,4 +29,5 @@ export function parseJSONToTradeStrategyCollector(jsonString) {
     return tradeStrategyCollector;
 }
 
-parseJSONToTradeStrategyCollector("tradeStrategy.json");*/
+const jsonString = fs.readFileSync('tradeStrategy.json', 'utf8');
+parseJSONToTradeStrategyCollector(jsonString);

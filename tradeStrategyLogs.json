@@ -1,4 +1,5 @@
 [
+  "Current cash: 0 at time: Mon Jan 09 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
   "Initial Budget: 10000",
   "Current cash: 9900 at time: Tue Jan 10 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
   "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Tue Jan 10 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 129.2274932861328 with transaction cost of trade of 0.02. Current cash: 9899.98",

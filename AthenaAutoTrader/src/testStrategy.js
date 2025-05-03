@@ -14,10 +14,6 @@ const testTradeStrategy = () => {
     const initialBudget = 10000; // Set initial budget for the trade strategy
     const analyzer = new Analyzer(new Date('2023-01-10'), new Date('2023-01-15'), 0.05, 0.02);
     
-    // set the definitions of the strategy collector
-    tradeStrategyCollector.setInitialBudget(initialBudget);
-    tradeStrategyCollector.setAnalyzer(analyzer);
-    
     // ########### let's create a buy strategy for a stock
     const buyingTradeStrategy = new TradeStrategy();
     const ifBlock = new IfBlock('percentage', '>', 0.01, '10000');
@@ -30,6 +26,10 @@ const testTradeStrategy = () => {
     buyingTradeStrategy.setIteration('per_day');
     // Add the strategy to the collector
     tradeStrategyCollector.addTradeStrategy(buyingTradeStrategy);
+
+    // set the definitions of the strategy collector
+    tradeStrategyCollector.setAnalyzer(analyzer);
+    tradeStrategyCollector.setInitialBudget(initialBudget);
 
     // ########### let's create a sell strategy for a stock
     const sellingTradeStrategy = new TradeStrategy();

@@ -49,8 +49,9 @@ class TradeStrategyCollector {
         throw new Error('Initial budget cannot be negative');
     }
 
+    const OneDayAgo = new Date(this.analyzer.getStartDateTime().getTime() - 24 * 60 * 60 * 1000);
     this.initialBudget = initialBudget;
-    this.portfolio.setCash(initialBudget);
+    this.portfolio.updateCash(this, OneDayAgo, initialBudget);
 }
 
     async executeTradeStrategy() {
