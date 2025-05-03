@@ -71,7 +71,7 @@ class Analyzer {
 
     appendPortfolioLog(totalValue, timestamp) {
         if (typeof totalValue === 'number' && timestamp instanceof Date) {
-            this.portfolioLog.push({ totalValue: totalValue, timestamp: timestamp });
+            this.porfolioLog.push({ totalValue: totalValue, timestamp: timestamp });
         } else {
             throw new Error('Invalid portfolio log format');
         }
@@ -118,6 +118,14 @@ class Analyzer {
 
     getOutputLog() {
         return this.outputLog;
+    }
+
+    getCashLog() {
+        return this.cashLog;
+    }
+
+    getPortfolioLog() {
+        return this.porfolioLog;
     }
 }
 

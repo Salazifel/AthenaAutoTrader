@@ -1,1 +1,14 @@
-[]
+[
+  "Initial Budget: 10000",
+  "Current cash: 9900 at time: Sun Jan 01 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+  "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Sun Jan 01 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 129.92999267578125 with transaction cost of trade of 0.02. Current cash: 9899.98",
+  "Current portfolio value: 195.25932955059088 at time: Mon Jan 02 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+  "Current cash: 9800.9802 at time: Mon Jan 02 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+  "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Mon Jan 02 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 125.06999969482422 with transaction cost of trade of 0.02. Current cash: 9800.9602",
+  "Current portfolio value: 293.2689315505909 at time: Tue Jan 03 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+  "Current cash: 9702.950598 at time: Tue Jan 03 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+  "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Tue Jan 03 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 125.06999969482422 with transaction cost of trade of 0.02. Current cash: 9702.930597999999",
+  "Current portfolio value: 393.3230811471184 at time: Wed Jan 04 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+  "Current cash: 9605.901292019998 at time: Wed Jan 04 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+  "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Wed Jan 04 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 126.36000061035156 with transaction cost of trade of 0.02. Current cash: 9605.881292019998"
+]

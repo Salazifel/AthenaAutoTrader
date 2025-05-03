@@ -48,7 +48,7 @@ async function getCurrentPrice(currenttime, shareName) {
         console.log('No current price available for the given date. Taking the middle price instead.');
     }
 
-    return currentPrice.close; // Assuming you want the closing price
+    return currentPrice; // Assuming you want the closing price
 }
 
 export { getCurrentPrice };
