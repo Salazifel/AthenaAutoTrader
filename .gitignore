@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# dotenv files
+.env
+.env.*
+
+# python rel
+.venv
+__pycache__
