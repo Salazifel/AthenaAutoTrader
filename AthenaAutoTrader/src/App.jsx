@@ -26,34 +26,15 @@ export default function App() {
       
       {/* Main Content Area */}
       <div style={{ display: "flex", padding: "1.5rem", gap: "1.5rem", height: "calc(100vh - 70px)" }}>
-        {/* Left Panel - Block Categories */}
+        {/* Left Panel - Blockly Workspace */}
         <div style={{ 
-          flex: "1", 
+          flex: "4", 
           backgroundColor: "#16161A", 
           borderRadius: "12px", 
           padding: "1rem",
           display: "flex",
           flexDirection: "column"
         }}>
-          <h3 style={{ margin: "0 0 1rem 0", color: "#FFF", fontSize: "16px" }}>Building Blocks</h3>
-          <p style={{ color: "#999", fontSize: "14px", marginBottom: "1rem" }}>
-            Drag blocks from here to build your trading strategies
-          </p>
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            {/* This div is just a placeholder - the actual blocks will be shown by the Blockly toolbox */}
-          </div>
-        </div>
-        
-        {/* Middle Panel - Blockly Workspace */}
-        <div style={{ 
-          flex: "2", 
-          backgroundColor: "#16161A", 
-          borderRadius: "12px", 
-          padding: "1rem",
-          display: "flex",
-          flexDirection: "column"
-        }}>
-          <h3 style={{ margin: "0 0 1rem 0", color: "#FFF", fontSize: "16px" }}>Build Your Strategy</h3>
           <div style={{ flex: 1, position: "relative", minHeight: "500px" }}>
             <BlocklyWorkspace onAnalyzeTriggered={handleAnalyzeTriggered} />
           </div>
