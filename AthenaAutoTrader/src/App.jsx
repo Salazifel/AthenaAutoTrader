@@ -13,7 +13,7 @@ export default function App() {
 
   const handleAnalyzeTriggered = (strategy) => {
     // Convert the blocks to a readable strategy description
-    setAiOutput(`🔍 AI Analysis Result:\n${strategy}`);
+    setAiOutput(`AI Analysis Result:\n${strategy}`);
   };
 
   return (
