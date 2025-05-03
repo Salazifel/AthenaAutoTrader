@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from jsonValidator import validate_response_json  # <- your new single validator
+from jsonValidator import validate_response_json
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO)
