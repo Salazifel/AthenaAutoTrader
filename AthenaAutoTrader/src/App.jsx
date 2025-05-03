@@ -21,15 +21,66 @@ export default function App() {
 
   const handleClick = async () => {
     const tradingBotJson = "{\n \"tradeStrategies\": [\n {\n \"tradeObjects\": [\n {\n \"shareName\": \"AAPL\"\n }\n ],\n \"iteration\": \"once\",\n \"ifBlocks\": [\n {\n \"objectToConsider\": \"price\",\n \"comparisonSymbol\": \">\",\n \"value\": 100,\n \"timeframe_in_seconds\": \"0\"\n }\n ],\n \"thenBlock\": {\n \"action\": \"buy\",\n \"unitType\": \"%\",\n \"unitValue\": 10\n }\n },\n {\n \"tradeObjects\": [\n {\n \"shareName\": \"AAPL\"\n }\n ],\n \"iteration\": \"once\",\n \"ifBlocks\": [\n {\n \"objectToConsider\": \"price\",\n \"comparisonSymbol\": \"<\",\n \"value\": 150,\n \"timeframe_in_seconds\": \"0\"\n }\n ],\n \"thenBlock\": {\n \"action\": \"sell\",\n \"unitType\": \"%\",\n \"unitValue\": 5\n }\n }\n ],\n \"analyzer\": {\n \"startDateTime\": \"2023-01-01T00:00:00.000Z\",\n \"endDateTime\": \"2023-12-31T00:00:00.000Z\",\n \"interestRate\": 0.05,\n \"costPerTrade\": 0.02,\n \"taxOnProfit\": 0,\n \"outputLog\": [],\n \"otherAnalyzers\": [],\n \"roi\": 0,\n \"annualizedReturn\": 0,\n \"sharpeRatio\": 0,\n \"maxDrawdown\": 0,\n \"winRate\": 0,\n \"profitFactor\": 0\n },\n \"initialBudget\": 10000\n}";
+    const userCreatedTradingBot = `
+      {\n  \"tradeStrategies\": [\n    {\n      \"tradeObjects\": [\n        {\n          \"shareName\": \"AAPL\"\n        }\n      ],\n      \"iteration\": \"once\",\n      \"ifBlocks\": [\n        {\n          \"objectToConsider\": \"price\",\n          \"comparisonSymbol\": \">\",\n          \"value\": 100,\n          \"timeframe_in_seconds\": \"0\"\n        }\n      ],\n      \"thenBlock\": {\n        \"action\": \"buy\",\n        \"unitType\": \"%\",\n        \"unitValue\": 10\n      }\n    },\n    {\n      \"tradeObjects\": [\n        {\n          \"shareName\": \"AAPL\"\n        }\n      ],\n      \"iteration\": \"once\",\n      \"ifBlocks\": [\n        {\n          \"objectToConsider\": \"price\",\n          \"comparisonSymbol\": \"<\",\n          \"value\": 150,\n          \"timeframe_in_seconds\": \"0\"\n        }\n      ],\n      \"thenBlock\": {\n        \"action\": \"sell\",\n        \"unitType\": \"%\",\n        \"unitValue\": 5\n      }\n    }\n  ],\n  \"analyzer\": {\n    \"startDateTime\": \"2023-01-01T00:00:00.000Z\",\n    \"endDateTime\": \"2023-12-31T00:00:00.000Z\",\n    \"interestRate\": 0.05,\n    \"costPerTrade\": 0.02,\n    \"taxOnProfit\": 0,\n    \"outputLog\": [],\n    \"otherAnalyzers\": [],\n    \"roi\": 0,\n    \"annualizedReturn\": 0,\n    \"sharpeRatio\": 0,\n    \"maxDrawdown\": 0,\n    \"winRate\": 0,\n    \"profitFactor\": 0\n  },\n  \"initialBudget\": 10000\n}
+      [
+        {
+          "cash": 9899.98,
+          "timestamp": "2023-01-01T00:00:00.000Z"
+        },
+        {
+          "cash": 9800.9602,
+          "timestamp": "2023-01-02T00:00:00.000Z"
+        },
+        {
+          "cash": 9702.930597999999,
+          "timestamp": "2023-01-03T00:00:00.000Z"
+        },
+        {
+          "cash": 9605.881292019998,
+          "timestamp": "2023-01-04T00:00:00.000Z"
+        }
+      ]
+      [
+      "Initial Budget: 10000",
+      "Current cash: 9900 at time: Sun Jan 01 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+      "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Sun Jan 01 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 129.92999267578125 with transaction cost of trade of 0.02. Current cash: 9899.98",
+      "Current portfolio value: 195.25932955059088 at time: Mon Jan 02 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+      "Current cash: 9800.9802 at time: Mon Jan 02 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+      "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Mon Jan 02 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 125.06999969482422 with transaction cost of trade of 0.02. Current cash: 9800.9602",
+      "Current portfolio value: 293.2689315505909 at time: Tue Jan 03 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+      "Current cash: 9702.950598 at time: Tue Jan 03 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+      "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Tue Jan 03 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 125.06999969482422 with transaction cost of trade of 0.02. Current cash: 9702.930597999999",
+      "Current portfolio value: 393.3230811471184 at time: Wed Jan 04 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+      "Current cash: 9605.901292019998 at time: Wed Jan 04 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
+      "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Wed Jan 04 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 126.36000061035156 with transaction cost of trade of 0.02. Current cash: 9605.881292019998"
+      ]  
+      [
+        {
+          "totalValue": 195.25932955059088,
+          "timestamp": "2023-01-02T00:00:00.000Z"
+        },
+        {
+          "totalValue": 293.2689315505909,
+          "timestamp": "2023-01-03T00:00:00.000Z"
+        },
+        {
+          "totalValue": 393.3230811471184,
+          "timestamp": "2023-01-04T00:00:00.000Z"
+        }
+      ]
+      `;
+
     setAiOutput(
       "Running analysis... Please wait."
     );
     const humanReadableResponse = await generateAIResponse(`
       You are a financial analyst. Your task is to analyze a trading strategy represented in JSON format. The JSON contains a list of trade strategies, each with its own conditions and actions. You need to evaluate the efficiency, profitability, and risk control of these strategies based on the provided parameters.
-      You will be provided context about how it has performed in the past, including profits, cash balance and ROI. You should analyze it and provide some short suggestions (100 words absolute max) for the user to take as feedback. The data you should analyze is as follows:
-      JSON input:  ${tradingBotJson}.
-      `);
+      You will be provided context about how it has performed in the past, including profits, cash balance and ROI. You should analyze it and provide some short suggestions (100 words absolute max) for the user to take as feedback. Do not use markdown format, it turns out ugly in the UI. The data you should analyze is as follows:
+      JSON input:  ${userCreatedTradingBot}.
+      `, false, "gemini-2.0-flash");
 
+    setAiOutput(humanReadableResponse);
 
     const aiResponse = await generateAIResponse(`
       You are a machine that modifies trading strategy configurations represented in strict JSON format. You must improve the trading logic based on efficiency, profitability, and risk control, especially by:
@@ -45,7 +96,8 @@ export default function App() {
       Do not include any text, commentary, or non-JSON output.
       You may not alter keys inside analyzer, only the values (e.g. simulate ROI change).
       JSON input:  ${tradingBotJson}.
-      Return only the improved JSON. Stop-losses should be implemented using the same logic structure (e.g. a new tradeStrategy that sells a portion of holdings if the price falls below a certain threshold after a buy). Time-based logic can be handled by modifying or setting timeframe_in_seconds. `);
+      Return only the improved JSON. Stop-losses should be implemented using the same logic structure (e.g. a new tradeStrategy that sells a portion of holdings if the price falls below a certain threshold after a buy). Time-based logic can be handled by modifying or setting timeframe_in_seconds. `
+    , true);
     
       if (typeof aiResponse === "string") {
         setAiOutput("No response from Gemini");

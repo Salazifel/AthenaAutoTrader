@@ -7,12 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from jsonValidator import validate_response_json
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+# Load .env and API key
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 
+# FastAPI app instance
 app = FastAPI()
 
 app.add_middleware(
@@ -32,18 +34,27 @@ else:
 async def gemini(request: Request):
     body = await request.json()
     prompt = body.get("prompt", "").strip()
+    validate = body.get("validate", True)  # default to True
+    model = body.get("model", "gemini-2.5-flash-preview-04-17") # default to 2.5 Flash
 
     if not prompt:
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")
 
-    def call_gemini():
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key={API_KEY}"
-        payload = {"contents": [{"parts": [{"text": prompt}]}]}
-        response = requests.post(
-            url,
-            headers={"Content-Type": "application/json"},
-            json=payload
+    def call_gemini(model):
+        url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{model}:generateContent?key={API_KEY}"
         )
+        payload = {"contents": [{"parts": [{"text": prompt}]}]}
+        try:
+            response = requests.post(
+                url,
+                headers={"Content-Type": "application/json"},
+                json=payload
+            )
+        except requests.RequestException as e:
+            raise RuntimeError("Network error while calling Gemini") from e
+
         if response.status_code != 200:
             raise RuntimeError(f"Gemini API error: {response.status_code}")
         try:
@@ -51,17 +62,26 @@ async def gemini(request: Request):
         except Exception as e:
             raise RuntimeError("Malformed Gemini response") from e
 
-    for attempt in range(3):  # first try + two retries
+    for attempt in range(3):  # First try + 2 retries
         try:
-            response_text = call_gemini()
-            logger.info(f"Gemini response (attempt {attempt + 1}):\n" + response_text)
-            if response_text.strip().startswith("```"):
-                response_text = response_text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            raw_response = call_gemini(model)
+            logger.info(f"Gemini response (attempt {attempt + 1}):\n{raw_response}")
 
-            validated = validate_response_json(response_text)
-            return validated.model_dump()
-        except (HTTPException, RuntimeError) as e:
+            cleaned = (
+                raw_response
+                .removeprefix("```json")
+                .removeprefix("```")
+                .removesuffix("```")
+                .strip()
+            )
+
+            if validate:
+                validated = validate_response_json(cleaned)
+                return validated.model_dump()
+            else:
+                return {"raw": cleaned}
+
+        except RuntimeError as e:
             logger.warning(f"[Gemini Retry] Attempt {attempt + 1}/3 failed: {e}")
             if attempt == 2:
                 raise HTTPException(status_code=500, detail="Gemini response invalid after retries")
-
