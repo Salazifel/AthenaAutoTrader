@@ -20,7 +20,6 @@ export default function App() {
       Optionally adding a stop-loss strategy (e.g. sell if price drops too far after buying).
       Optionally using timeframe_in_seconds to simulate conditions like "if X doesn't happen within Y seconds".
       Your rules:
-
       Output only valid raw JSON. No markdown, no comments, no prose.
       Maintain the exact schema: do not rename keys or introduce new ones.
       You may duplicate or remove entries in tradeStrategies, but every one must follow the same structure.
@@ -28,10 +27,9 @@ export default function App() {
       Do not explain your changes.
       Do not include any text, commentary, or non-JSON output.
       You may not alter keys inside analyzer, only the values (e.g. simulate ROI change).
-
       JSON input:  ${tradingBotJson}.
       Return only the improved JSON. Stop-losses should be implemented using the same logic structure (e.g. a new tradeStrategy that sells a portion of holdings if the price falls below a certain threshold after a buy). Time-based logic can be handled by modifying or setting timeframe_in_seconds. `);
-
+    
     if (typeof aiResponse === "string") {
       setAiOutput("No response from Gemini");
     } else {
@@ -55,7 +53,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ backgroundColor: "#0C0C0E", minHeight: "100vh", color: "#fff", fontFamily: "SF Pro Display, sans-serif" }}>
+    <div style={{ backgroundColor: "#0C0C0E", minHeight: "100vh", color: "#fff", fontFamily: "SF Pro Display, sans-serif", position: "relative" }}>
       {/* Header with Revolut Logo */}
       <header style={{ padding: "1rem 2rem", borderBottom: "1px solid #222", display: "flex", alignItems: "center" }}>
         <img src={revolutLogo} alt="Revolut" style={{ height: "30px" }} />
@@ -136,12 +134,102 @@ export default function App() {
         </div>
       </div>
       
-      {/* Analysis Modal */}
-      <AnalysisModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        analysisContent={analysisStrategy} 
-      />
+      {/* Analysis Modal - Now as a floating overlay */}
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 9999,
+          backgroundColor: '#16161A',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          width: '80%',
+          maxWidth: '800px',
+          maxHeight: '80vh',
+          boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1rem',
+            borderBottom: '1px solid #222',
+            paddingBottom: '0.5rem'
+          }}>
+            <h2 style={{ 
+              color: '#FFF', 
+              fontSize: '18px', 
+              fontWeight: '600',
+              margin: 0 
+            }}>Strategy Analysis Results</h2>
+            <button onClick={() => setIsModalOpen(false)} 
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#FFF',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                      padding: '0.25rem 0.5rem'
+                    }}>×</button>
+          </div>
+          <div style={{
+            overflowY: 'auto',
+            flex: 1,
+            maxHeight: 'calc(80vh - 120px)'
+          }}>
+            <pre style={{ 
+              color: '#0BDF86', 
+              whiteSpace: 'pre-wrap', 
+              fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+              fontSize: '14px',
+              padding: '1rem',
+              backgroundColor: '#0C0C0E',
+              borderRadius: '8px',
+              margin: 0
+            }}>{analysisStrategy}</pre>
+          </div>
+          <div style={{
+            marginTop: '1rem',
+            paddingTop: '0.5rem',
+            borderTop: '1px solid #222',
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}>
+            <button onClick={() => setIsModalOpen(false)} 
+                    style={{
+                      backgroundColor: '#3712CB',
+                      color: '#FFF',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '0.5rem 1rem',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      fontWeight: '500'
+                    }}>Close</button>
+          </div>
+        </div>
+      )}
+      
+      {/* Semi-transparent backdrop */}
+      {isModalOpen && (
+        <div 
+          onClick={() => setIsModalOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9998,
+          }}
+        />
+      )}
     </div>
   );
 }
