@@ -4,6 +4,16 @@ import AnalysisModal from "./AnalysisModal";
 import revolutLogo from './assets/revolut-logo.png';
 import { generateAIResponse } from "./geminiApi";
 
+import {
+  createTradeObject,
+  createIteration,
+  createIfBlock,
+  createThenBlock,
+  createTradeStrategy,
+  createAnalyzer,
+  createTradeStrategyCollector
+} from './trading_objects/MainCreator';
+
 export default function App() {
   const [aiOutput, setAiOutput] = useState("Waiting for Analyze block...");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,23 +40,68 @@ export default function App() {
       JSON input:  ${tradingBotJson}.
       Return only the improved JSON. Stop-losses should be implemented using the same logic structure (e.g. a new tradeStrategy that sells a portion of holdings if the price falls below a certain threshold after a buy). Time-based logic can be handled by modifying or setting timeframe_in_seconds. `);
     
-    if (typeof aiResponse === "string") {
-      setAiOutput("No response from Gemini");
-    } else {
-      setAiOutput(JSON.stringify(aiResponse, null, 2));
-      // Open the modal with the response
-      setAnalysisStrategy(JSON.stringify(aiResponse, null, 2));
-      setIsModalOpen(true);
-    }
-  };
+      if (typeof aiResponse === "string") {
+        setAiOutput("No response from Gemini");
+      } else {
+        setAiOutput(JSON.stringify(aiResponse, null, 2));
+        setAnalysisStrategy(JSON.stringify(aiResponse, null, 2));
+        setIsModalOpen(true);
+      }
+    };
 
-  const handleAnalyzeTriggered = (strategy) => {
-    // Convert the blocks to a readable strategy description
-    const analysisResult = `AI Analysis Result:\n${strategy}`;
-    setAiOutput(analysisResult);
-    setAnalysisStrategy(analysisResult);
-    // Don't open modal automatically - wait for button click
-  };
+    const handleAnalyzeTriggered = (strategy) => {
+      try {
+        const strategyJson = typeof strategy === 'string' ? JSON.parse(strategy) : strategy;
+        
+        const tradeStrategies = strategyJson.tradeStrategies.map(strat => {
+          const tradeObjects = strat.tradeObjects.map(obj => 
+            createTradeObject(obj.shareName)
+          );
+          
+          const iteration = createIteration(strat.iteration);
+          
+          const ifBlocks = strat.ifBlocks.map(block => 
+            createIfBlock(
+              block.objectToConsider,
+              block.comparisonSymbol,
+              block.value,
+              block.timeframe_in_seconds
+            )
+          );
+          
+          const thenBlock = createThenBlock(
+            strat.thenBlock.action,
+            strat.thenBlock.unitType,
+            strat.thenBlock.unitValue
+          );
+          
+          return createTradeStrategy(tradeObjects, iteration, ifBlocks, thenBlock);
+        });
+        
+        const analyzer = createAnalyzer(
+          strategyJson.analyzer.startDateTime,
+          strategyJson.analyzer.endDateTime,
+          strategyJson.analyzer.interestRate,
+          strategyJson.analyzer.costPerTrade
+        );
+        
+        const collector = createTradeStrategyCollector(
+          tradeStrategies,
+          strategyJson.initialBudget,
+          analyzer
+        );
+        
+        console.log("Created strategy collector:", collector);
+        
+        setAiOutput(JSON.stringify(strategyJson, null, 2));
+        setAnalysisStrategy(JSON.stringify(strategyJson, null, 2));
+        
+      } catch (error) {
+        console.error("Error processing strategy:", error);
+        setAiOutput("Error processing strategy: " + error.message);
+      }
+    };
+  
 
   const openAnalysisModal = () => {
     setIsModalOpen(true);
