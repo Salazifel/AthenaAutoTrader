@@ -1,11 +1,13 @@
 import TradeStrategy from './TradeStrategy.js';
 import Analyzer from './Analyzer.js'; // Assuming you have an Analyzer class defined somewhere
+import StockAPI from '../stock_data_collector/stockAPI.js';
 
 class TradeStrategyCollector {
   constructor() {
     this.tradeStrategies = []; // Array to hold trade strategies
     this.analyzer = null; // Placeholder for an analyzer object
     this.initialBudget = 0;
+    this.portfolio = []; // Placeholder for a portfolio object
   }
 
   addTradeStrategy(tradeStrategy) {
@@ -43,6 +45,13 @@ class TradeStrategyCollector {
                 }
             }
 
+            // get historical data for the trade objects in the defined timeframe on the fine-grained level of the interval
+            for (const tradeStrategy of this.tradeStrategies) {
+                for (const tradeObject of tradeStrategy.tradeObjects) {
+                    tradeObject.setHistoricalData(await StockAPI.getStockData(tradeObject.getShareName(), this.getIteration(), this.analyzer.getStartDateTime(), this.analyzer.getEndDateTime()));
+                }
+            }
+
             // in the timeframe defined in the analyzer and using the iteration type, make a loop
             const currentTime = this.analyzer.getStartDateTime();
             const endTime = this.analyzer.getEndDateTime();
@@ -52,10 +61,17 @@ class TradeStrategyCollector {
                     break;
                 }
 
-                for (const tradeObject of this.tradeObjects) {
-                    // continue
-                }
+                for (const tradeStrategy of this.tradeStrategies) {
+
+                    for (const tradeObject of tradeStrategy.tradeObjects) {
+                        if (tradeStrategy.getIfBlocks().every(ifBlock => ifBlock.checkCondition(tradeObject.getHistoricalData(), currentTime))) {
+                            // If all conditions
+                            // exectute the then block
+                            tradeStrategy.getThenBlock().execute(self, tradeObject, currentTime, this.initialBudget);
+                    }
             }
+                    }
+                }
                 
 
 

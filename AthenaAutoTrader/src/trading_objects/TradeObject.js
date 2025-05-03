@@ -17,6 +17,7 @@ class TradeObject {
         }
 
         this.shareName = shareName;
+        this.historicalData = null; // Placeholder for historical data
     }
 
     getShareName() {
@@ -40,6 +41,10 @@ class TradeObject {
         }
 
         this.shareName = newShareName;
+    }
+
+    setHistoricalData(historicalData) {
+        this.historicalData = historicalData;
     }
 }
 
