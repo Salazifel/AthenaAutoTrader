@@ -1,9 +1,13 @@
 import os
+import json
 
 import requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+# validation library
+from pydantic import ValidationError
 
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
@@ -34,5 +38,17 @@ async def gemini(request: Request):
 
     print("Gemini raw response:", response.status_code, response.text)  # <- log this
 
-    return response.json()
+    try:
+        parsed = json.loads(response_text)
+    except json.JSONDecodeError as e:
+        print("❌ Invalid JSON from Gemini:", e)
+        raise HTTPException(status_code=400, detail="Invalid JSON from AI")
 
+    try:
+        validated = StrategyJson.parse_obj(parsed)
+    except ValidationError as e:
+        print("❌ Schema validation failed:", e)
+        raise HTTPException(status_code=400, detail="AI response does not match expected format")
+
+    # return the original data if it passes the checks vv
+    return parsed
