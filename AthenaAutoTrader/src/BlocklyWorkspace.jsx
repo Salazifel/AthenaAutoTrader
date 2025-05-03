@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import 'blockly/javascript';
@@ -55,9 +55,56 @@ class StockDropdownField extends Blockly.FieldDropdown {
 
 const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
   const blocklyDiv = useRef(null);
-
+  const [hasAnalyzeBlock, setHasAnalyzeBlock] = useState(false);
+  
   useEffect(() => {
     if (!blocklyDiv.current) return;
+
+    // Register JavaScript generators first (before block definitions)
+    javascriptGenerator.forBlock['price_condition'] = function(block) {
+      const stock = block.getFieldValue('STOCK');
+      const condition = block.getFieldValue('CONDITION');
+      const percent = block.getFieldValue('PERCENT');
+      const timeframe = block.getFieldValue('TIMEFRAME');
+      const timeunit = block.getFieldValue('TIMEUNIT');
+      return [`${stock} ${condition.toLowerCase()} ${percent}% in last ${timeframe} ${timeunit.toLowerCase()}`, javascriptGenerator.ORDER_ATOMIC];
+    };
+    
+    ['buy', 'sell', 'hold'].forEach(action => {
+      javascriptGenerator.forBlock[`${action}_action`] = function(block) {
+        const stock = block.getFieldValue('STOCK');
+        if (action === 'hold') {
+          const days = block.getFieldValue('DAYS');
+          return `HOLD ${stock} for ${days} days;\n`;
+        } else {
+          const amount = block.getFieldValue('AMOUNT');
+          return `${action.toUpperCase()} ${amount} shares of ${stock};\n`;
+        }
+      };
+    });
+    
+    javascriptGenerator.forBlock['if_then'] = function(block) {
+      const condition = javascriptGenerator.valueToCode(block, 'CONDITION', javascriptGenerator.ORDER_ATOMIC);
+      const thenCode = javascriptGenerator.statementToCode(block, 'THEN');
+      return `IF ${condition} THEN:\n${thenCode}`;
+    };
+    
+    javascriptGenerator.forBlock['and_block'] = function(block) {
+      const a = javascriptGenerator.valueToCode(block, 'A', javascriptGenerator.ORDER_ATOMIC);
+      const b = javascriptGenerator.valueToCode(block, 'B', javascriptGenerator.ORDER_ATOMIC);
+      return [`(${a} AND ${b})`, javascriptGenerator.ORDER_ATOMIC];
+    };
+    
+    javascriptGenerator.forBlock['or_block'] = function(block) {
+      const a = javascriptGenerator.valueToCode(block, 'A', javascriptGenerator.ORDER_ATOMIC);
+      const b = javascriptGenerator.valueToCode(block, 'B', javascriptGenerator.ORDER_ATOMIC);
+      return [`(${a} OR ${b})`, javascriptGenerator.ORDER_ATOMIC];
+    };
+    
+    javascriptGenerator.forBlock['analyze_block'] = function(block) {
+      const strategy = javascriptGenerator.statementToCode(block, 'STRATEGY');
+      return `STRATEGY TO ANALYZE:\n${strategy}`;
+    };
 
     // Define custom blocks
     const defineBlocks = () => {
@@ -82,7 +129,6 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
                 ["months", "MONTHS"]
               ]), "TIMEUNIT");
           
-
           this.setOutput(true, "Boolean");
           this.setColour("#3712CB");
           this.setTooltip("Check if a stock price meets a condition");
@@ -163,29 +209,6 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
           this.setColour("#870BA4");
         }
       };
-
-      // Define JavaScript generators
-      javascriptGenerator['price_condition'] = function(block) {
-        const stock = block.getFieldValue('STOCK');
-        const condition = block.getFieldValue('CONDITION');
-        const percent = block.getFieldValue('PERCENT');
-        const timeframe = block.getFieldValue('TIMEFRAME');
-        const timeunit = block.getFieldValue('TIMEUNIT');
-        return [`${stock} ${condition.toLowerCase()} ${percent}% in last ${timeframe} ${timeunit.toLowerCase()}`, javascriptGenerator.ORDER_ATOMIC];
-      };
-
-      ['buy', 'sell', 'hold'].forEach(action => {
-        javascriptGenerator[`${action}_action`] = function(block) {
-          const stock = block.getFieldValue('STOCK');
-          if (action === 'hold') {
-            const days = block.getFieldValue('DAYS');
-            return `HOLD ${stock} for ${days} days;\n`;
-          } else {
-            const amount = block.getFieldValue('AMOUNT');
-            return `${action.toUpperCase()} ${amount} shares of ${stock};\n`;
-          }
-        };
-      });
     };
 
     defineBlocks();
@@ -276,25 +299,91 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
       .blocklyMainBackground {
         fill:rgb(245, 242, 242) !important;
       }
+      .analyze-button {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background-color: #870BA4;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        z-index: 100;
+        display: none;
+      }
+      .analyze-button:hover {
+        background-color: #9B1AC6;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+      }
+      .analyze-button.visible {
+        display: block;
+      }
     `;
     document.head.appendChild(style);
 
-    // Handle analyze
+    // Add analyze button
+    const analyzeButton = document.createElement('button');
+    analyzeButton.className = 'analyze-button';
+    analyzeButton.textContent = 'Analyze Strategy';
+    blocklyDiv.current.appendChild(analyzeButton);
+
+    // Handle analyze block detection
     workspace.addChangeListener((event) => {
-      const analyzeBlocks = workspace.getBlocksByType('analyze_block');
-      if (analyzeBlocks.length > 0) {
-        const code = javascriptGenerator.workspaceToCode(workspace);
-        onAnalyzeTriggered(code);
+      if (event.type === Blockly.Events.BLOCK_CREATE || 
+          event.type === Blockly.Events.BLOCK_DELETE || 
+          event.type === Blockly.Events.BLOCK_CHANGE) {
+        
+        const analyzeBlocks = workspace.getBlocksByType('analyze_block');
+        const hasAnalyze = analyzeBlocks.length > 0;
+        
+        setHasAnalyzeBlock(hasAnalyze);
+        
+        // Show or hide analyze button
+        if (hasAnalyze) {
+          analyzeButton.classList.add('visible');
+        } else {
+          analyzeButton.classList.remove('visible');
+        }
+      }
+    });
+
+    // Handle analyze button click
+    analyzeButton.addEventListener('click', () => {
+      if (hasAnalyzeBlock) {
+        try {
+          console.log("Attempting to generate code");
+          // Debug - check if all blocks have generators
+          const allBlocks = workspace.getAllBlocks(false);
+          allBlocks.forEach(block => {
+            console.log(`Block type: ${block.type}`);
+          });
+          
+          const code = javascriptGenerator.workspaceToCode(workspace);
+          console.log("Generated code:", code);
+          onAnalyzeTriggered(code);
+        } catch (error) {
+          console.error("Error generating code:", error);
+          onAnalyzeTriggered("Error generating code: " + error.message);
+        }
       }
     });
 
     return () => {
       workspace.dispose();
       document.head.removeChild(style);
+      if (blocklyDiv.current && blocklyDiv.current.contains(analyzeButton)) {
+        blocklyDiv.current.removeChild(analyzeButton);
+      }
     };
-  }, [onAnalyzeTriggered]);
+  }, [onAnalyzeTriggered, hasAnalyzeBlock]);
 
-  return <div ref={blocklyDiv} style={{ width: '100%', height: '100%' }} />;
+  return <div ref={blocklyDiv} style={{ width: '100%', height: '100%', position: 'relative' }} />;
 };
 
 export default BlocklyWorkspace;
