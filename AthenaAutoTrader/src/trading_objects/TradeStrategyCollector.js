@@ -54,6 +54,8 @@ class TradeStrategyCollector {
 
     async executeTradeStrategy() {
         try {
+            this.getAnalyzer().appendToOutputLog('Initial Budget: ' + this.initialBudget);
+            
             for (const tradeStrategy of this.tradeStrategies) {
                 if (!tradeStrategy.checkTradeStrategyValidity()) {
                     throw new Error('Trade strategy is not valid');
@@ -98,14 +100,8 @@ class TradeStrategyCollector {
                 }
             }
 
-            let analyzerLogs = this.analyzer.getOutputLog();
-            for (const log of analyzerLogs) {
-                console.log(log);
-            }
-            console.log('Trade strategy executed successfully.');
-
             // save the logs to a file
-            fs.writeFile('tradeStrategyLogs.json', JSON.stringify(analyzerLogs, null, 2), (err) => {
+            fs.writeFile('tradeStrategyLogs.json', JSON.stringify(this.analyzer.getOutputLog(), null, 2), (err) => {
                 if (err) {
                     console.error('Error writing to file', err);
                 }
@@ -113,6 +109,27 @@ class TradeStrategyCollector {
                     console.log('Trade strategy logs saved to tradeStrategyLogs.json');
                 }
             });
+
+            // save the cashLogs in a json file
+            fs.writeFile('tradeStrategyCashLogs.json', JSON.stringify(this.analyzer.getCashLog(), null, 2), (err) => {
+                if (err) {
+                    console.error('Error writing to file', err);
+                }
+                else {
+                    console.log('Trade strategy cash logs saved to tradeStrategyCashLogs.json');
+                }
+            });
+
+            // save the portfolio value in a json file
+            fs.writeFile('tradeStrategyPortfolioValue.json', JSON.stringify(this.analyzer.getPortfolioLog(), null, 2), (err) => {
+                if (err) {
+                    console.error('Error writing to file', err);
+                }
+                else {
+                    console.log('Trade strategy portfolio value logs saved to tradeStrategyPortfolioValue.json');
+                }
+            });
+
         } catch (error) {
             console.error('Error executing trade strategy:', error.message);
         }

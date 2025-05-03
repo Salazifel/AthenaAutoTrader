@@ -4,7 +4,6 @@ class Analyzer {
         this.endDateTime = endDateTime;
         this.interestRate = interestRate; // Interest rate for comparison
         this.costPerTrade = costPerTrade; // Cost per trade for the analysis
-        this.taxOnProfit = taxOnProfit; // Tax on profit for the analysis
         
         this.outputLog = [];
         this.porfolioLog = [];
@@ -71,7 +70,7 @@ class Analyzer {
 
     appendPortfolioLog(totalValue, timestamp) {
         if (typeof totalValue === 'number' && timestamp instanceof Date) {
-            this.portfolioLog.push({ totalValue: totalValue, timestamp: timestamp });
+            this.porfolioLog.push({ totalValue: totalValue, timestamp: timestamp });
         } else {
             throw new Error('Invalid portfolio log format');
         }
@@ -118,6 +117,14 @@ class Analyzer {
 
     getOutputLog() {
         return this.outputLog;
+    }
+
+    getCashLog() {
+        return this.cashLog;
+    }
+
+    getPortfolioLog() {
+        return this.porfolioLog;
     }
 }
 

@@ -68,7 +68,7 @@ class Portfolio {
     }
 
     updateCash(tradeStrategyCollector, timeStamp, cash) {
-        tradeStrategyCollector.getAnalyzer().appendCashLog(cash, timeStamp);
+        tradeStrategyCollector.getAnalyzer().appendCashLog(this.cash + cash, timeStamp);
         tradeStrategyCollector.getAnalyzer().appendToOutputLog('Current cash: ' + this.cash + ' at time: ' + timeStamp);
         this.cash += cash;
     }

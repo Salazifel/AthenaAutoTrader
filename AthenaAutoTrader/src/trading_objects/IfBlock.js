@@ -35,7 +35,7 @@ class IfBlock {
     
         const currentPrice = await getCurrentPrice(currentTime, shareName);
     
-        // 2️⃣ If timeframe is 0, do a direct comparison
+        // If timeframe is 0, do a direct comparison
         if (this.timeframe_in_seconds === "0") {
             let valueToCompare;
             if (this.objectToConsider === 'price') {
@@ -46,27 +46,17 @@ class IfBlock {
             return this.evaluate({ [this.objectToConsider]: valueToCompare });
         }
     
-        // TODO
-        // 3️⃣ Otherwise, find the price at (currentTime - timeframe_in_seconds)
-        const pastTime = new Date(now.getTime() - this.timeframe_in_seconds * 1000);
-    
-        const pastData = historicalData
-            .slice()
-            .reverse()
-            .find(item => new Date(item.date) <= pastTime);
-    
-        if (!pastData) {
-            throw new Error('No historical data available for the timeframe.');
-        }
-    
-        const pastValue = pastData.close;
-    
-        let valueToCompare;
+        // Otherwise, find the price at (currentTime - timeframe_in_seconds)
+        const startTimeToCheck = new Date(currentTime.getTime() - this.timeframe_in_seconds * 1000);
+        const startPrice = await getCurrentPrice(startTimeToCheck, shareName);
+        const endPrice = await getCurrentPrice(currentTime, shareName);
+
+        // calculate the percentage change
+        const valueToCompare = ((endPrice - startPrice) / startPrice) * 100; // percentage change
         if (this.objectToConsider === 'price') {
-            valueToCompare = currentValue;
-        } else if (this.objectToConsider === 'percent_change') {
-            const percentChange = ((currentValue - pastValue) / pastValue) * 100;
-            valueToCompare = percentChange;
+            throw new Error('Unsupported objectToConsider for timeframe > 0');
+        } else if (this.objectToConsider === 'percentage') {
+            // If the object to consider is percentage, we can directly use the valueToCompare
         } else {
             throw new Error('Unsupported objectToConsider');
         }
