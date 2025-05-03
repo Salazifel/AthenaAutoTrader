@@ -99,7 +99,7 @@ export default function App() {
                 fontWeight: "500"
               }}
             >
-              Ask Gemini
+              Analyze tradingbot
             </button>
             <button 
               onClick={openAnalysisModal}
