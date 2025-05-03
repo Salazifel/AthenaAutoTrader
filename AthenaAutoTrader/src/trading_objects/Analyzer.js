@@ -82,6 +82,21 @@ class Analyzer {
             throw new Error('Invalid tax on profit format');
         }
     }
+
+    getCostPerTrade() {
+        return this.costPerTrade;
+    }
+    getTaxOnProfit() {
+        return this.taxOnProfit;
+    }
+
+    getStartDateTime() {
+        return this.startDateTime;
+    }
+
+    getEndDateTime() {
+        return this.endDateTime;
+    }
 }
 
 export default Analyzer;

@@ -1,13 +1,15 @@
 import TradeStrategy from './TradeStrategy.js';
 import Analyzer from './Analyzer.js'; // Assuming you have an Analyzer class defined somewhere
-import StockAPI from '../stock_data_collector/stockAPI.js';
+import { getStockData } from '../stock_data_collector/stockAPI.js';
+import Portfolio from '../trading_objects/Portfolio.js';
+import { IterationType } from './TradeStrategy.js'; // Assuming you have an IterationType enum defined somewhere
 
 class TradeStrategyCollector {
   constructor() {
     this.tradeStrategies = []; // Array to hold trade strategies
     this.analyzer = null; // Placeholder for an analyzer object
     this.initialBudget = 0;
-    this.portfolio = []; // Placeholder for a portfolio object
+    this.portfolio = new Portfolio();
   }
 
   addTradeStrategy(tradeStrategy) {
@@ -16,6 +18,10 @@ class TradeStrategyCollector {
     } else {
       throw new Error('Invalid TradeStrategy instance');
     }
+  }
+
+  getPortfolio() {
+    return this.portfolio;
   }
 
   setAnalyzer(analyzer) {
@@ -34,7 +40,9 @@ class TradeStrategyCollector {
     if (initialBudget < 0) {
         throw new Error('Initial budget cannot be negative');
     }
+
     this.initialBudget = initialBudget;
+    this.portfolio.setCash(initialBudget);
 }
 
     async executeTradeStrategy() {
@@ -48,33 +56,42 @@ class TradeStrategyCollector {
             // get historical data for the trade objects in the defined timeframe on the fine-grained level of the interval
             for (const tradeStrategy of this.tradeStrategies) {
                 for (const tradeObject of tradeStrategy.tradeObjects) {
-                    tradeObject.setHistoricalData(await StockAPI.getStockData(tradeObject.getShareName(), this.getIteration(), this.analyzer.getStartDateTime(), this.analyzer.getEndDateTime()));
+                    tradeObject.setHistoricalData(await getStockData(tradeObject.getShareName(), tradeStrategy.getIteration(), this.analyzer.getStartDateTime(), this.analyzer.getEndDateTime()));
                 }
             }
 
             // in the timeframe defined in the analyzer and using the iteration type, make a loop
-            const currentTime = this.analyzer.getStartDateTime();
-            const endTime = this.analyzer.getEndDateTime();
-            const interval = this.getIteration();
-            while (true) {
-                if (this.addIterationToDateTime(currentTime, interval) > endTime) {
-                    break;
-                }
-
-                for (const tradeStrategy of this.tradeStrategies) {
+            let currentTime = this.analyzer.getStartDateTime();
+            const endTime = this.analyzer.getEndDateTime();    
+            for (const tradeStrategy of this.tradeStrategies) {
+                const interval = tradeStrategy.getIteration();
+                while (true) {
+                    if (this.addIterationToDateTime(currentTime, interval) > endTime) {
+                        break;
+                    }
 
                     for (const tradeObject of tradeStrategy.tradeObjects) {
                         if (tradeStrategy.getIfBlocks().every(ifBlock => ifBlock.checkCondition(tradeObject.getHistoricalData(), currentTime))) {
                             // If all conditions
                             // exectute the then block
                             tradeStrategy.getThenBlock().execute(self, tradeObject, currentTime, this.initialBudget);
+                            if (interval === IterationType.ONCE) {
+                                break; // Exit the loop if the iteration is ONCE
+                            }
+                        }
                     }
-            }
-                    }
+                    currentTime = this.addIterationToDateTime(currentTime, interval);
                 }
-                
+            }
 
+            analyzerLogs = this.analyzer.getOutputLog();
+            for (const log of analyzerLogs) {
+                console.log(log);
+            }
+            console.log('Trade strategy executed successfully.');
 
+            // save the logs to a file
+            const logFileName = `trade_strategy_log_${new Date().toISOString()}.txt`;
         } catch (error) {
             console.error('Error executing trade strategy:', error.message);
         }
@@ -83,9 +100,7 @@ class TradeStrategyCollector {
     addIterationToDateTime(dateTime, iteration) {
         switch (iteration) {
             case IterationType.ONCE:
-                return dateTime;
-            case IterationType.ALWAYS:
-                return dateTime;
+                return new Date(dateTime.getTime() + 24 * 60 * 60 * 1000); // Move to the next day
             case IterationType.PER_MINUTE:
                 return new Date(dateTime.getTime() + 60 * 1000);
             case IterationType.PER_HOUR:

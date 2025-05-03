@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 
 import requests
 from dotenv import load_dotenv
@@ -8,6 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # validation library
 from pydantic import ValidationError
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='latest.log', level=logging.INFO)
 
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
@@ -21,8 +25,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-print("Loaded API key:", API_KEY[:6], "..." if API_KEY else "❌ NOT FOUND")
+if API_KEY:
+    logger.info("Loaded API key:" + API_KEY[:6] + "...")
+else:
+    logger.error("❌ API KEY NOT FOUND")
 
 
 @app.post("/api/gemini")

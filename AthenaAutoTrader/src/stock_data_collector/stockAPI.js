@@ -38,7 +38,7 @@ function getStockData(tradeObject, ticker, startDate, endDate) {
     });    
 }
 
-export default getStockData;
+export { getStockData };
 
 // Usage example
 const outputPath = './aapl_data.json';
@@ -48,5 +48,3 @@ async function fetchAndSave() {
     fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
     console.log(`Saved data to ${outputPath}`);
 }
-
-fetchAndSave();

@@ -54,6 +54,10 @@ const testTradeStrategy = () => {
         }
     });
 
+    // Execute the trade strategy
+    tradeStrategyCollector.executeTradeStrategy();
+    console.log('Finished');
+
 };
 
 // Run the test
