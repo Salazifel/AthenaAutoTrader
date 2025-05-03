@@ -40,9 +40,6 @@ def plot_total_assets(total_value_file, cash_file):
     dates = [dt for dt, _ in combined]
     values = [val for _, val in combined]
 
-    print(dates)
-    print(values)
-
     # 그래프 그리기
     plt.figure(figsize=(10, 5))
     plt.plot(dates, values, marker="o", label="Total Asset")
