@@ -103,6 +103,13 @@ class TradeStrategyCollector {
                 }
             }
 
+            // console log the portfolio value logs
+            console.log('Portfolio Value Logs: ', this.analyzer.getPortfolioLog());
+            // console log the cash logs
+            console.log('Cash Logs: ', this.analyzer.getCashLog());
+            // console log the output logs
+            console.log('Output Logs: ', this.analyzer.getOutputLog());
+
             // save the logs to a file
             /*fs.writeFile('tradeStrategyLogs.json', JSON.stringify(this.analyzer.getOutputLog(), null, 2), (err) => {
                 if (err) {
