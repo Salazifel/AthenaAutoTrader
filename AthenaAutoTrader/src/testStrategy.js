@@ -1,65 +1,59 @@
-import TradeObject from '../trading_objects/TradeObject';
-import ThenBlock from '../trading_objects/ThenBlock';
+import IfBlock from './trading_objects/IfBlock.js'
+import ThenBlock from './trading_objects/ThenBlock.js';
+import TradeObject from './trading_objects/TradeObject.js';
+import TradeStrategy from './trading_objects/TradeStrategy.js';
+import TradeStrategyCollector from './trading_objects/TradeStrategyCollector.js';
+import Analyzer from './trading_objects/Analyzer.js'; // Add this missing import
+import fs from 'fs'; // Import the fs module for file operations
 
-// Mock classes for Iteration, IfBlock, and AndConnection
-class Iteration {
-    constructor(type) {
-        this.type = type; // e.g., "once", "per minute", etc.
-    }
-}
-
-class IfBlock {
-    constructor(object, comparison, value, timeframeStart, timeframeEnd) {
-        this.object = object; // e.g., "price", "RSI"
-        this.comparison = comparison; // e.g., "<", ">", "="
-        this.value = value; // e.g., a float
-        this.timeframeStart = timeframeStart; // Start datetime
-        this.timeframeEnd = timeframeEnd; // End datetime
-    }
-}
-
-class AndConnection {
-    constructor(ifBlocks) {
-        this.ifBlocks = ifBlocks; // Array of IfBlock objects
-    }
-}
-
-class TradeStrategy {
-    constructor(tradeObject, iteration, ifBlocks, thenBlock) {
-        this.tradeObject = tradeObject;
-        this.iteration = iteration;
-        this.ifBlocks = ifBlocks;
-        this.thenBlock = thenBlock;
-    }
-
-    simulate() {
-        return `Simulating strategy for ${this.tradeObject.getShareName()} with action ${this.thenBlock.action}`;
-    }
-}
 
 // Test script
 const testTradeStrategy = () => {
-    // Create a TradeObject
+    const tradeStrategyCollector = new TradeStrategyCollector();
+    // define the strategy collector
+    const initialBudget = 10000; // Set initial budget for the trade strategy
+    const analyzer = new Analyzer(new Date('2023-01-01'), new Date('2023-12-31'), 0.05, 0.02);
+    
+    // set the definitions of the strategy collector
+    tradeStrategyCollector.setInitialBudget(initialBudget);
+    tradeStrategyCollector.setAnalyzer(analyzer);
+    
+    // ########### let's create a buy strategy for a stock
+    const buyingTradeStrategy = new TradeStrategy();
+    const ifBlock = new IfBlock('price', '>', 100, '0');
+    const thenBlock = new ThenBlock('buy', '%', 10);
     const tradeObject = new TradeObject('AAPL');
+    // Add the IfBlock, ThenBlock, and TradeObject to the strategy
+    buyingTradeStrategy.addIfBlock(ifBlock);
+    buyingTradeStrategy.setThenBlock(thenBlock);
+    buyingTradeStrategy.addTradeObject(tradeObject);
+    buyingTradeStrategy.setIteration('once');
+    // Add the strategy to the collector
+    tradeStrategyCollector.addTradeStrategy(buyingTradeStrategy);
 
-    // Create an Iteration
-    const iteration = new Iteration('per day');
+    // ########### let's create a sell strategy for a stock
+    const sellingTradeStrategy = new TradeStrategy();
+    const ifBlockSell = new IfBlock('price', '<', 150, '0');
+    const thenBlockSell = new ThenBlock('sell', '%', 5);
+    const tradeObjectSell = new TradeObject('AAPL');
+    // Add the IfBlock, ThenBlock, and TradeObject to the strategy
+    sellingTradeStrategy.addIfBlock(ifBlockSell);
+    sellingTradeStrategy.setThenBlock(thenBlockSell);
+    sellingTradeStrategy.addTradeObject(tradeObjectSell);
+    sellingTradeStrategy.setIteration('once');
+    // Add the strategy to the collector
+    tradeStrategyCollector.addTradeStrategy(sellingTradeStrategy);
 
-    // Create IfBlocks
-    const ifBlock1 = new IfBlock('price', '>', 150, '2025-01-01', '2025-12-31');
-    const ifBlock2 = new IfBlock('RSI', '<', 30, '2025-01-01', '2025-12-31');
+    console.log(tradeStrategyCollector.createJSON());
+    // save the json to a file
+    fs.writeFile('tradeStrategy.json', JSON.stringify(tradeStrategyCollector.createJSON(), null, 2), (err) => {
+        if (err) {
+            console.error('Error writing to file', err);
+        } else {
+            console.log('Trade strategy saved to tradeStrategy.json');
+        }
+    });
 
-    // Connect IfBlocks with AndConnection
-    const andConnection = new AndConnection([ifBlock1, ifBlock2]);
-
-    // Create a ThenBlock
-    const thenBlock = new ThenBlock('buy', 'unit', 10);
-
-    // Create a TradeStrategy
-    const tradeStrategy = new TradeStrategy(tradeObject, iteration, andConnection, thenBlock);
-
-    // Simulate the strategy
-    console.log(tradeStrategy.simulate());
 };
 
 // Run the test
