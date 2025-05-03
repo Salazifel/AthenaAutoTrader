@@ -11,56 +11,21 @@ let isConnected = false;
 
 async function getStockData(tradeObject, startDate, endDate) {
     if (!tradeObject || !startDate || !endDate) {
-        throw new Error('tradeObject with Ticker, startDate, and endDate are required');
+        throw new Error('tradeObject, startDate, and endDate are required');
     }
 
-    const ticker = tradeObject;
-    const collectionName = `${ticker}_data`;
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
     try {
-        if (!isConnected) {
-            await client.connect();
-            isConnected = true;
-        }
-
-        const db = client.db(dbName);
-        const collection = db.collection(collectionName);
-
-        const query = {
-            Date: { $gte: start, $lte: end }
-        };
-
-        const options = {
-            sort: { Date: 1 },
-            projection: { _id: 0 }
-        };
-
-        const results = await collection.find(query, options).toArray();
-        return results;
+        const url = `http://localhost:3000/api/stock?symbol=${encodeURIComponent(tradeObject)}&start=${encodeURIComponent(startDate)}&end=${encodeURIComponent(endDate)}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const payload = await res.json();
+        if (!payload.success) throw new Error(payload.error);
+        return payload.data;
     } catch (err) {
-        console.error(`MongoDB query failed for ${ticker}:`, err);
+        console.error(`MongoDB query failed for ${tradeObject}:`, err);
         throw err;
     }
 }
-
-async function closeConnection() {
-    if (isConnected) {
-        await client.close();
-        isConnected = false;
-        console.log('MongoDB connection closed.');
-    }
-}
-
-// when ctrl +c is pressed, close the connection
-process.on('SIGINT', async () => {
-    await closeConnection();
-    process.exit(0);
-});
-
-export { closeConnection };
 
 export { getStockData };
 
