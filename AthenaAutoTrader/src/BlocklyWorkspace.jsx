@@ -207,6 +207,18 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
       .blocklyFlyoutLabel {
         font-size: 14px !important;
       }
+          .blocklyToolboxDiv {
+    width: 200px !important;
+    overflow: visible !important;
+    
+  }
+  .blocklyTreeRow {
+    height: auto !important;
+    min-height: 32px !important;
+  }
+  .blocklyFlyout {
+    margin-left: 100px !important;
+  }
     `;
     document.head.appendChild(style);
 
