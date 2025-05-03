@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import BlocklyWorkspace from "./BlocklyWorkspace";
 import revolutLogo from './assets/revolut-logo.png';
+import { generateAIResponse } from "./geminiApi";
 
 export default function App() {
   const [aiOutput, setAiOutput] = useState("Waiting for Analyze block...");
+
+  const handleClick = async () => {
+    const result = await generateAIResponse("Explain what is important for a trading strategy");
+    setAiOutput(result);
+  };
 
   const handleAnalyzeTriggered = (strategy) => {
     // Convert the blocks to a readable strategy description
@@ -63,6 +69,7 @@ export default function App() {
           flexDirection: "column"
         }}>
           <h3 style={{ margin: "0 0 1rem 0", color: "#FFF", fontSize: "16px" }}>AI Analysis</h3>
+          <button onClick={handleClick}>Ask Gemini</button>
           <div style={{ flex: 1, overflowY: "auto" }}>
             <pre style={{ 
               color: "#0BDF86", 
