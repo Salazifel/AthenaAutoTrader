@@ -1,0 +1,4 @@
+[
+  "Executing action: buy with unitType: % and unitValue: 10 for tradeObject: AAPL at time: Sun Jan 01 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 125 with transaction cost of trade of 0.02. Current cash: 9899.98",
+  "Executing action: sell with unitType: % and unitValue: 5 for tradeObject: AAPL at time: Mon Jan 02 2023 01:00:00 GMT+0100 (Mitteleuropäische Normalzeit) at the price of 125 with transaction cost of trade of 0.02. Current cash: 9904.96"
+]

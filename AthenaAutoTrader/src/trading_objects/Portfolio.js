@@ -1,10 +1,12 @@
+import { getCurrentPrice } from "../stock_data_collector/stockAPI.js";
+
 class Portfolio {
     constructor() {
         this.tradingObjects = {};
         this.cash = 0;
     }
 
-    updatePortfolio(shareName, paidPricePerShare, quantity, date) {
+    updatePortfolio(tradeStrategyCollector, timeStamp, shareName, paidPricePerShare, quantity, date) {
         if (this.tradingObjects[shareName]) {
             if (quantity < 0) {
                 // if quantity is negative, check if we have enough shares to sell, if not, sell all we have
@@ -13,8 +15,8 @@ class Portfolio {
                 }
 
                 // Calculate realized P/L
-                const profit = (paidPricePerShare - tradingObject.averagePricePerShare) * sellQuantity;
-                tradingObject.profit += profit;
+                const profit = (paidPricePerShare - this.tradingObjects[shareName].averagePricePerShare) * quantity;
+                this.tradingObjects[shareName].profit += profit;
             }
             // Update existing trading object
             const tradingObject = this.tradingObjects[shareName];
@@ -34,6 +36,15 @@ class Portfolio {
                 // Remove trading object if quantity is 0 or less
                 delete this.tradingObjects[shareName];
             }
+            
+            let totalPortfolioValue = 0;
+            for (tradingObject in this.tradingObjects) {
+                const currentPrice = 
+                totalPortfolioValue += this.tradingObjects[tradingObject].quantity * getCurrentPrice(timeStamp, shareName);
+            }
+
+            tradeStrategyCollector.getAnalyzer().appendPortfolioLog(totalPortfolioValue, timeStamp);
+            tradeStrategyCollector.getAnalyzer().appendToOutputLog('Current portfolio value: ' + totalPortfolioValue + ' at time: ' + timeStamp);
         } else {
             // Create new trading object
             this.tradingObjects[shareName] = {
@@ -55,7 +66,9 @@ class Portfolio {
         return this.tradingObjects[shareName] ? this.tradingObjects[shareName].averagePricePerShare : 0;
     }
 
-    updateCash(cash) {
+    updateCash(tradeStrategyCollector, timeStamp, cash) {
+        tradeStrategyCollector.getAnalyzer().appendCashLog(cash, timeStamp);
+        tradeStrategyCollector.getAnalyzer().appendToOutputLog('Current cash: ' + this.cash + ' at time: ' + timeStamp);
         this.cash += cash;
     }
 

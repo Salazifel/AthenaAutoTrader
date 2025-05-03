@@ -7,6 +7,8 @@ class Analyzer {
         this.taxOnProfit = taxOnProfit; // Tax on profit for the analysis
         
         this.outputLog = [];
+        this.porfolioLog = [];
+        this.cashLog = [];
         this.otherAnalyzers = [];
         
         // Metrics
@@ -53,9 +55,25 @@ class Analyzer {
 
     appendToOutputLog(message) {
         if (typeof message === 'string') {
-            this.outputLog.push(message);
+            this.outputLog.push(String(message));
         } else {
             throw new Error('Invalid log message format');
+        }
+    }
+
+    appendCashLog(cash, timestamp) {
+        if (typeof cash === 'number' && timestamp instanceof Date) {
+            this.cashLog.push({ cash: cash, timestamp: timestamp });
+        } else {
+            throw new Error('Invalid cash log format');
+        }
+    }
+
+    appendPortfolioLog(totalValue, timestamp) {
+        if (typeof totalValue === 'number' && timestamp instanceof Date) {
+            this.portfolioLog.push({ totalValue: totalValue, timestamp: timestamp });
+        } else {
+            throw new Error('Invalid portfolio log format');
         }
     }
 
@@ -96,6 +114,10 @@ class Analyzer {
 
     getEndDateTime() {
         return this.endDateTime;
+    }
+
+    getOutputLog() {
+        return this.outputLog;
     }
 }
 

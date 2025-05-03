@@ -40,11 +40,41 @@ function getStockData(tradeObject, ticker, startDate, endDate) {
 
 export { getStockData };
 
-// Usage example
-const outputPath = './aapl_data.json';
-async function fetchAndSave() {
-    const data = await getStockData('AAPL', IterationType.PER_DAY, '2025-04-01', '2025-05-02');
 
-    fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
-    console.log(`Saved data to ${outputPath}`);
+function getCurrentPrice(currenttime, shareName = null, historicaldata = null, firstTry = true) {
+    let currentPrice = null;
+    if (historicaldata === null && shareName != null) {
+        const FiveDaysAgo = new Date(currenttime.getTime() - 5 * 24 * 60 * 60 * 1000);
+        const FiveDaysAhead = new Date(currenttime.getTime() + 5 * 24 * 60 * 60 * 1000);
+        historicaldata = getStockData(shareName, '1d', FiveDaysAgo, FiveDaysAhead);
+    } else {
+        for (const quote of historicaldata.quotes) {
+            if (new Date(quote.date) <= currenttime) {
+                currentPrice = quote.close;
+                break;
+            }
+        }
+    }
+
+    if (firstTry == true) {
+        if (currentPrice === null) {
+            getCurrentPrice(currenttime, shareName, historicaldata, false);
+        }
+    }
+
+    for (const quote of historicaldata.quotes) {
+        if (new Date(quote.date) > currenttime) {
+            currentPrice = quote.close;
+            break;
+        }
+    }
+
+    if (!currentPrice) {
+        console.log('No stock available on that date');
+        return;
+    }
+
+    return currentPrice;
 }
+
+export { getCurrentPrice };
