@@ -149,6 +149,8 @@ export default function App() {
           strategyJson.initialBudget,
           analyzer
         );
+
+        collector.executeTradeStrategy();
         
         console.log("Created strategy collector:", collector);
         

@@ -5,7 +5,7 @@ const ActionEnum = Object.freeze({
 
 const UnitTypeEnum = Object.freeze({
     PERCENT: "%",
-    UNIT: "unit",
+    UNIT: "shares",
     ABSOLUTE: "absolute",
 });
 

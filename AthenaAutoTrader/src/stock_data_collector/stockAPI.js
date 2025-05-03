@@ -1,13 +1,7 @@
 // import yahooFinance from 'yahoo-finance2';
 // import { IterationType } from '../trading_objects/TradeStrategy.js';
 // import fs from 'fs'; // Import the fs module for file operations
-import { MongoClient } from 'mongodb';
 
-const uri = "mongodb+srv://AthenaAutoTrader:hackUPC2025winner!@athena.4buv5xy.mongodb.net/";
-const client = new MongoClient(uri);
-const dbName = 'stock_db';
-
-let isConnected = false;
 
 async function getStockData(tradeObject, startDate, endDate) {
     if (!tradeObject || !startDate || !endDate) {

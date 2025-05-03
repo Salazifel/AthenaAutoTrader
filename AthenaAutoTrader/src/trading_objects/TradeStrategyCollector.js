@@ -5,7 +5,7 @@ import Portfolio from '../trading_objects/Portfolio.js';
 import { IterationType } from './TradeStrategy.js'; // Assuming you have an IterationType enum defined somewhere
 import fs from 'fs'; // Import the fs module for file operations
 import { getCurrentPrice } from '../stock_data_collector/stockAPI.js'; // Assuming you have a function to get the current price
-import { get } from 'http';
+
 
 class TradeStrategyCollector {
   constructor() {
