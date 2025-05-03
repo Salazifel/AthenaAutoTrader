@@ -15,7 +15,7 @@ class IfBlock(BaseModel):
 
 class ThenBlock(BaseModel):
     action: Literal["buy", "sell"]
-    unitType: Literal["%", "units"]
+    unitType: Literal['%', 'units', 'absolute']
     unitValue: Union[int, float]
 
 
