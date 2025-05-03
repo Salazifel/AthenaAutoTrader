@@ -2,7 +2,7 @@ import React from 'react';
 
 const AnalysisModal = ({ isOpen, onClose, analysisContent }) => {
   if (!isOpen) return null;
-
+  
   return (
     <div className="modal-backdrop" 
          style={{
@@ -16,6 +16,7 @@ const AnalysisModal = ({ isOpen, onClose, analysisContent }) => {
            justifyContent: 'center',
            alignItems: 'center',
            zIndex: 1000,
+           pointerEvents: 'auto' // This ensures clicks work within the modal
          }}>
       <div className="modal-content" 
            style={{
