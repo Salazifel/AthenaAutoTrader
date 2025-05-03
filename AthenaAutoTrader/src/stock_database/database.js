@@ -35,7 +35,7 @@ function getStockEntry(stockName, stockType) {
     }
 }
 
-await function getTrendingETFs() {
+async function getTrendingETFs() {
     // to be later replaced with a web scraping function
     try {
         // Example list of popular ETFs (customize as needed)
@@ -55,7 +55,7 @@ await function getTrendingETFs() {
 }
 
 
-await function getTrendingStocks() {
+async function getTrendingStocks() {
     // to be later replaced with a web scraping function
     try {
         // Expanded list of trending stocks from the S&P 500 (customize as needed)

@@ -310,5 +310,85 @@
   {
     "name": "NOW",
     "type": "stock"
+  },
+  {
+    "name": "SPY",
+    "type": "etf"
+  },
+  {
+    "name": "QQQ",
+    "type": "etf"
+  },
+  {
+    "name": "VTI",
+    "type": "etf"
+  },
+  {
+    "name": "DIA",
+    "type": "etf"
+  },
+  {
+    "name": "ARKK",
+    "type": "etf"
+  },
+  {
+    "name": "IVV",
+    "type": "etf"
+  },
+  {
+    "name": "VOO",
+    "type": "etf"
+  },
+  {
+    "name": "IWM",
+    "type": "etf"
+  },
+  {
+    "name": "EFA",
+    "type": "etf"
+  },
+  {
+    "name": "EEM",
+    "type": "etf"
+  },
+  {
+    "name": "XLK",
+    "type": "etf"
+  },
+  {
+    "name": "XLF",
+    "type": "etf"
+  },
+  {
+    "name": "XLV",
+    "type": "etf"
+  },
+  {
+    "name": "XLE",
+    "type": "etf"
+  },
+  {
+    "name": "XLU",
+    "type": "etf"
+  },
+  {
+    "name": "VNQ",
+    "type": "etf"
+  },
+  {
+    "name": "HYG",
+    "type": "etf"
+  },
+  {
+    "name": "LQD",
+    "type": "etf"
+  },
+  {
+    "name": "BND",
+    "type": "etf"
+  },
+  {
+    "name": "TLT",
+    "type": "etf"
   }
 ]
