@@ -1,21 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-// Path to the JSON file
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const databasePath = path.join(__dirname, 'stock_data.json');
-
-// Ensure the JSON file exists and is initialized
-if (!fs.existsSync(databasePath)) {
-    fs.writeFileSync(databasePath, JSON.stringify([]));
-}
-
 // Function to get a stock entry by name and type
 function getStockEntry(stockName, stockType) {
     try {
-        const data = fs.readFileSync(databasePath, 'utf8');
-        const stockDatabase = JSON.parse(data);
+        const stockDatabase = createDatabase();
 
         const stockEntry = stockDatabase.find(
             stock => stock.name === stockName && stock.type === stockType
@@ -33,7 +19,7 @@ function getStockEntry(stockName, stockType) {
     }
 }
 
-async function getTrendingETFs() {
+function getTrendingETFs() {
     // to be later replaced with a web scraping function
     try {
         // Example list of popular ETFs (customize as needed)
@@ -44,7 +30,6 @@ async function getTrendingETFs() {
             'VNQ', 'HYG', 'LQD', 'BND', 'TLT'
         ];        
         
-        console.log('Trending ETFs:', etfs);
         return etfs;
     } catch (err) {
         console.error('Error fetching trending ETFs:', err.message);
@@ -53,7 +38,7 @@ async function getTrendingETFs() {
 }
 
 
-async function getTrendingStocks() {
+function getTrendingStocks() {
     // to be later replaced with a web scraping function
     try {
         // Expanded list of trending stocks from the S&P 500 (customize as needed)
@@ -98,7 +83,6 @@ async function getTrendingStocks() {
             'CMCSA', 'NFLX', 'ACN', 'TXN', 'QCOM', 'LIN', 'SPGI', 'NOW'
         ];
         
-        console.log('Trending stocks:', sp500Tickers);
         return sp500Tickers;
     } catch (err) {
         console.error('Error fetching trending stocks:', err.message);
@@ -106,22 +90,21 @@ async function getTrendingStocks() {
     }
 }
 
-async function createDatabase() {
+function createDatabase() {
     const database = [];
 
     // 1️⃣ Fetch trending stocks from Yahoo Finance
-    const stocks = await getTrendingStocks();
+    const stocks = getTrendingStocks();
     stocks.forEach(stock => database.push({ name: stock, type: 'stock' }));
 
     // 2️⃣ Add popular ETFs manually or scrape
-    const etfs = await getTrendingETFs();
+    const etfs = getTrendingETFs();
     etfs.forEach(etf => database.push({ name: etf, type: 'etf' }));
 
     // Write to JSON file
-    fs.writeFileSync(databasePath, JSON.stringify(database, null, 2));
-    console.log('Database created with', database.length, 'entries.');
+    return database;
 }
 
-createDatabase();
+
 
 export { getStockEntry, createDatabase, getTrendingStocks, getTrendingETFs };

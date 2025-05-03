@@ -46,14 +46,21 @@ async function getStockData(tradeObject, startDate, endDate) {
     }
 }
 
-process.on('SIGINT', async () => {
-    console.log('Shutting down gracefully...');
+async function closeConnection() {
     if (isConnected) {
         await client.close();
+        isConnected = false;
         console.log('MongoDB connection closed.');
     }
+}
+
+// when ctrl +c is pressed, close the connection
+process.on('SIGINT', async () => {
+    await closeConnection();
     process.exit(0);
 });
+
+export { closeConnection };
 
 export { getStockData };
 
@@ -65,21 +72,20 @@ async function getCurrentPrice(currenttime, shareName) {
     const FiveDaysAhead = new Date(currenttime.getTime() + 5 * 24 * 60 * 60 * 1000);
     const stockData = await getStockData(shareName, FiveDaysAgo, FiveDaysAhead);
     // set currentTime to 13:30 but keep the date the same as currenttime
-    currenttime = new Date(currenttime.getFullYear(), currenttime.getMonth(), currenttime.getDate(), 15, 30, 0, 0);
+    currenttime = new Date(currenttime.getFullYear(), currenttime.getMonth(), currenttime.getDate(), 1, 0, 0, 0);
     let currentPrice = 0;
 
-    const quotes = stockData.quotes;
-    for (const quote of quotes) {
-        if (new Date(quote.date).getTime() === currenttime.getTime()) {
-            currentPrice = quote.close;
+    for (const quote of stockData) {
+        if (new Date(quote.Date).getTime() === currenttime.getTime()) {
+            currentPrice = quote.Close;
             break;
         }
     }
 
     if (!currentPrice) {
         // take the quote.close in the middle of the quotes array
-        const middleIndex = Math.floor(quotes.length / 2);
-        currentPrice = quotes[middleIndex].close;
+        const middleIndex = Math.floor(stockData.length / 2);
+        currentPrice = stockData[middleIndex].Close;
         console.log('No current price available for the given date. Taking the middle price instead.');
     }
 

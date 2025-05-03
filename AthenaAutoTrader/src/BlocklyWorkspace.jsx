@@ -3,6 +3,8 @@ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import 'blockly/javascript';
 import { javascriptGenerator } from 'blockly/javascript';
+import { parseStrategyToJson } from './utils/strategyParser';
+
 
 class StockDropdownField extends Blockly.FieldDropdown {
   constructor(options) {
@@ -56,6 +58,23 @@ class StockDropdownField extends Blockly.FieldDropdown {
 const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
   const blocklyDiv = useRef(null);
   const [hasAnalyzeBlock, setHasAnalyzeBlock] = useState(false);
+
+  const handleAnalyzeClick = (workspace) => {
+    if (!hasAnalyzeBlock) return;
+    
+    try {
+      const code = javascriptGenerator.workspaceToCode(workspace);
+      console.log("Generated code:", code);
+      
+      const strategyJson = parseStrategyToJson(code);
+      console.log("Parsed JSON:", strategyJson);
+      
+      onAnalyzeTriggered(strategyJson);
+    } catch (error) {
+      console.error("Error generating code:", error);
+      onAnalyzeTriggered("Error generating code: " + error.message);
+    }
+  };
   
   useEffect(() => {
     if (!blocklyDiv.current) return;
@@ -410,26 +429,7 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
       }
     });
 
-    // Handle analyze button click
-    analyzeButton.addEventListener('click', () => {
-      if (hasAnalyzeBlock) {
-        try {
-          console.log("Attempting to generate code");
-          // Debug - check if all blocks have generators
-          const allBlocks = workspace.getAllBlocks(false);
-          allBlocks.forEach(block => {
-            console.log(`Block type: ${block.type}`);
-          });
-          
-          const code = javascriptGenerator.workspaceToCode(workspace);
-          console.log("Generated code:", code);
-          onAnalyzeTriggered(code);
-        } catch (error) {
-          console.error("Error generating code:", error);
-          onAnalyzeTriggered("Error generating code: " + error.message);
-        }
-      }
-    });
+    analyzeButton.addEventListener('click', () => handleAnalyzeClick(workspace));
 
     return () => {
       workspace.dispose();
@@ -442,5 +442,6 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
 
   return <div ref={blocklyDiv} style={{ width: '100%', height: '100%', position: 'relative' }} />;
 };
+
 
 export default BlocklyWorkspace;

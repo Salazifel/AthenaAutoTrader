@@ -7,7 +7,8 @@ import json
 
 load_dotenv()
 
-def get_stock_data(ticker, start_date, end_date, iteration_type='daily'):
+
+def get_stock_data(ticker, start_date, end_date, iteration_type="daily"):
     # Validate inputs
     if not (ticker and start_date and end_date):
         raise ValueError("Ticker, start_date, and end_date are required")
@@ -20,11 +21,15 @@ def get_stock_data(ticker, start_date, end_date, iteration_type='daily'):
     # Determine interval
     if iteration_type == "per_minute":
         if delta_days > 7:
-            raise ValueError("Yahoo Finance only allows minute data for the last 7 days")
+            raise ValueError(
+                "Yahoo Finance only allows minute data for the last 7 days"
+            )
         interval = "1m"
     elif iteration_type == "per_hour":
         if delta_days > 60:
-            raise ValueError("Yahoo Finance only allows hourly data for the last 60 days")
+            raise ValueError(
+                "Yahoo Finance only allows hourly data for the last 60 days"
+            )
         interval = "1h"
     else:
         if delta_days > 30 * 365:
@@ -38,7 +43,7 @@ def get_stock_data(ticker, start_date, end_date, iteration_type='daily'):
         raise Exception(f"No data fetched for {ticker}. Check ticker and date range.")
 
     if isinstance(data.columns, pd.MultiIndex):
-        data.columns = ['_'.join(col).strip() for col in data.columns.values]
+        data.columns = ["_".join(col).strip() for col in data.columns.values]
 
     data.reset_index(inplace=True)
 
@@ -46,17 +51,18 @@ def get_stock_data(ticker, start_date, end_date, iteration_type='daily'):
     if close_col not in data.columns:
         raise Exception(f"'{close_col}' column not found in data.")
 
-    # Date + Close만 저장
     filtered_data = data[["Date", close_col]].copy()
     filtered_data.rename(columns={close_col: "Close"}, inplace=True)
 
-    records = filtered_data.to_dict(orient='records')
+    records = filtered_data.to_dict(orient="records")
 
     # MongoDB connection
-    mongo_uri = "mongodb+srv://AthenaAutoTrader:hackUPC2025winner!@athena.4buv5xy.mongodb.net/"
+    mongo_uri = (
+        "mongodb+srv://AthenaAutoTrader:hackUPC2025winner!@athena.4buv5xy.mongodb.net/"
+    )
     client = MongoClient(mongo_uri)
     db = client["stock_db"]
-    
+
     collection_name = ticker + "_data"
     collection = db[collection_name]
 
@@ -64,7 +70,8 @@ def get_stock_data(ticker, start_date, end_date, iteration_type='daily'):
     collection.insert_many(records)
     print(f"{len(records)} records inserted into MongoDB collection '{ticker}'.")
 
-def get_multiple_stocks(ticker_json_path, start_date, end_date, iteration_type='daily'):
+
+def get_multiple_stocks(ticker_json_path, start_date, end_date, iteration_type="daily"):
     with open(ticker_json_path) as f:
         raw_data = json.load(f)
 
@@ -75,6 +82,7 @@ def get_multiple_stocks(ticker_json_path, start_date, end_date, iteration_type='
             get_stock_data(ticker, start_date, end_date, iteration_type)
         except Exception as e:
             print(f"Error with {ticker}: {e}")
+
 
 if __name__ == "__main__":
     start = "2020-01-01"
