@@ -65,10 +65,6 @@ class TradeStrategy {
             throw new Error('At least one TradeObject is required');
         }
 
-        if (!this.analyzer) {
-            throw new Error('Analyzer is required for analysis');
-        }
-
         return true;
     }
 

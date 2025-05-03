@@ -46,6 +46,13 @@ class TradeObject {
     setHistoricalData(historicalData) {
         this.historicalData = historicalData;
     }
+
+    getHistoricalData() {
+        if (!this.historicalData) {
+            throw new Error('Historical data is not set.');
+        }
+        return this.historicalData;
+    }
 }
 
 export default TradeObject;
