@@ -1,0 +1,314 @@
+[
+  {
+    "name": "AAPL",
+    "type": "stock"
+  },
+  {
+    "name": "MSFT",
+    "type": "stock"
+  },
+  {
+    "name": "GOOGL",
+    "type": "stock"
+  },
+  {
+    "name": "AMZN",
+    "type": "stock"
+  },
+  {
+    "name": "TSLA",
+    "type": "stock"
+  },
+  {
+    "name": "NVDA",
+    "type": "stock"
+  },
+  {
+    "name": "META",
+    "type": "stock"
+  },
+  {
+    "name": "BRK-B",
+    "type": "stock"
+  },
+  {
+    "name": "JPM",
+    "type": "stock"
+  },
+  {
+    "name": "BAC",
+    "type": "stock"
+  },
+  {
+    "name": "WFC",
+    "type": "stock"
+  },
+  {
+    "name": "GS",
+    "type": "stock"
+  },
+  {
+    "name": "MS",
+    "type": "stock"
+  },
+  {
+    "name": "AXP",
+    "type": "stock"
+  },
+  {
+    "name": "BLK",
+    "type": "stock"
+  },
+  {
+    "name": "UNH",
+    "type": "stock"
+  },
+  {
+    "name": "JNJ",
+    "type": "stock"
+  },
+  {
+    "name": "PFE",
+    "type": "stock"
+  },
+  {
+    "name": "MRK",
+    "type": "stock"
+  },
+  {
+    "name": "ABBV",
+    "type": "stock"
+  },
+  {
+    "name": "TMO",
+    "type": "stock"
+  },
+  {
+    "name": "ABT",
+    "type": "stock"
+  },
+  {
+    "name": "LLY",
+    "type": "stock"
+  },
+  {
+    "name": "PG",
+    "type": "stock"
+  },
+  {
+    "name": "KO",
+    "type": "stock"
+  },
+  {
+    "name": "PEP",
+    "type": "stock"
+  },
+  {
+    "name": "COST",
+    "type": "stock"
+  },
+  {
+    "name": "WMT",
+    "type": "stock"
+  },
+  {
+    "name": "MDLZ",
+    "type": "stock"
+  },
+  {
+    "name": "CL",
+    "type": "stock"
+  },
+  {
+    "name": "HD",
+    "type": "stock"
+  },
+  {
+    "name": "LOW",
+    "type": "stock"
+  },
+  {
+    "name": "MCD",
+    "type": "stock"
+  },
+  {
+    "name": "SBUX",
+    "type": "stock"
+  },
+  {
+    "name": "NKE",
+    "type": "stock"
+  },
+  {
+    "name": "DIS",
+    "type": "stock"
+  },
+  {
+    "name": "TJX",
+    "type": "stock"
+  },
+  {
+    "name": "XOM",
+    "type": "stock"
+  },
+  {
+    "name": "CVX",
+    "type": "stock"
+  },
+  {
+    "name": "COP",
+    "type": "stock"
+  },
+  {
+    "name": "SLB",
+    "type": "stock"
+  },
+  {
+    "name": "EOG",
+    "type": "stock"
+  },
+  {
+    "name": "BA",
+    "type": "stock"
+  },
+  {
+    "name": "CAT",
+    "type": "stock"
+  },
+  {
+    "name": "DE",
+    "type": "stock"
+  },
+  {
+    "name": "LMT",
+    "type": "stock"
+  },
+  {
+    "name": "UNP",
+    "type": "stock"
+  },
+  {
+    "name": "HON",
+    "type": "stock"
+  },
+  {
+    "name": "GE",
+    "type": "stock"
+  },
+  {
+    "name": "RTX",
+    "type": "stock"
+  },
+  {
+    "name": "INTC",
+    "type": "stock"
+  },
+  {
+    "name": "AMD",
+    "type": "stock"
+  },
+  {
+    "name": "AVGO",
+    "type": "stock"
+  },
+  {
+    "name": "CSCO",
+    "type": "stock"
+  },
+  {
+    "name": "ADBE",
+    "type": "stock"
+  },
+  {
+    "name": "CRM",
+    "type": "stock"
+  },
+  {
+    "name": "ORCL",
+    "type": "stock"
+  },
+  {
+    "name": "IBM",
+    "type": "stock"
+  },
+  {
+    "name": "VZ",
+    "type": "stock"
+  },
+  {
+    "name": "T",
+    "type": "stock"
+  },
+  {
+    "name": "TMUS",
+    "type": "stock"
+  },
+  {
+    "name": "NEE",
+    "type": "stock"
+  },
+  {
+    "name": "DUK",
+    "type": "stock"
+  },
+  {
+    "name": "SO",
+    "type": "stock"
+  },
+  {
+    "name": "PLD",
+    "type": "stock"
+  },
+  {
+    "name": "AMT",
+    "type": "stock"
+  },
+  {
+    "name": "CCI",
+    "type": "stock"
+  },
+  {
+    "name": "V",
+    "type": "stock"
+  },
+  {
+    "name": "MA",
+    "type": "stock"
+  },
+  {
+    "name": "PYPL",
+    "type": "stock"
+  },
+  {
+    "name": "CMCSA",
+    "type": "stock"
+  },
+  {
+    "name": "NFLX",
+    "type": "stock"
+  },
+  {
+    "name": "ACN",
+    "type": "stock"
+  },
+  {
+    "name": "TXN",
+    "type": "stock"
+  },
+  {
+    "name": "QCOM",
+    "type": "stock"
+  },
+  {
+    "name": "LIN",
+    "type": "stock"
+  },
+  {
+    "name": "SPGI",
+    "type": "stock"
+  },
+  {
+    "name": "NOW",
+    "type": "stock"
+  }
+]
