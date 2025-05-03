@@ -1,29 +1,59 @@
-import IfBlock from '../trading_objects/IfBlock';
-import ThenBlock from '../trading_objects/ThenBlock';
-import TradeObject from '../trading_objects/TradeObject';
-import TradeStrategy from '../trading_objects/TradeStrategy';
+import IfBlock from './trading_objects/IfBlock.js'
+import ThenBlock from './trading_objects/ThenBlock.js';
+import TradeObject from './trading_objects/TradeObject.js';
+import TradeStrategy from './trading_objects/TradeStrategy.js';
+import TradeStrategyCollector from './trading_objects/TradeStrategyCollector.js';
+import Analyzer from './trading_objects/Analyzer.js'; // Add this missing import
+import fs from 'fs'; // Import the fs module for file operations
+
 
 // Test script
 const testTradeStrategy = () => {
-    // Create instances of IfBlock, ThenBlock, and TradeObject
-    const ifBlock = new IfBlock('price', '>', 100, '1m', 0.5);
+    const tradeStrategyCollector = new TradeStrategyCollector();
+    // define the strategy collector
+    const initialBudget = 10000; // Set initial budget for the trade strategy
+    const analyzer = new Analyzer(new Date('2023-01-01'), new Date('2023-12-31'), 0.05, 0.02);
+    
+    // set the definitions of the strategy collector
+    tradeStrategyCollector.setInitialBudget(initialBudget);
+    tradeStrategyCollector.setAnalyzer(analyzer);
+    
+    // ########### let's create a buy strategy for a stock
+    const buyingTradeStrategy = new TradeStrategy();
+    const ifBlock = new IfBlock('price', '>', 100, '0');
     const thenBlock = new ThenBlock('buy', '%', 10);
     const tradeObject = new TradeObject('AAPL');
-
-    // Create an instance of TradeStrategy
-    const tradeStrategy = new TradeStrategy();
-
     // Add the IfBlock, ThenBlock, and TradeObject to the strategy
-    tradeStrategy.addIfBlock(ifBlock);
-    tradeStrategy.setThenBlock(thenBlock);
-    tradeStrategy.addTradeObject(tradeObject);
+    buyingTradeStrategy.addIfBlock(ifBlock);
+    buyingTradeStrategy.setThenBlock(thenBlock);
+    buyingTradeStrategy.addTradeObject(tradeObject);
+    buyingTradeStrategy.setIteration('once');
+    // Add the strategy to the collector
+    tradeStrategyCollector.addTradeStrategy(buyingTradeStrategy);
 
-    // Set the iteration type
-    tradeStrategy.setIteration('once');
+    // ########### let's create a sell strategy for a stock
+    const sellingTradeStrategy = new TradeStrategy();
+    const ifBlockSell = new IfBlock('price', '<', 150, '0');
+    const thenBlockSell = new ThenBlock('sell', '%', 5);
+    const tradeObjectSell = new TradeObject('AAPL');
+    // Add the IfBlock, ThenBlock, and TradeObject to the strategy
+    sellingTradeStrategy.addIfBlock(ifBlockSell);
+    sellingTradeStrategy.setThenBlock(thenBlockSell);
+    sellingTradeStrategy.addTradeObject(tradeObjectSell);
+    sellingTradeStrategy.setIteration('once');
+    // Add the strategy to the collector
+    tradeStrategyCollector.addTradeStrategy(sellingTradeStrategy);
 
-    // Log the strategy details
-    console.log('Trade Strategy:', tradeStrategy);
-    console.log('If Blocks:', tradeStrategy.getIfBlocks());
+    console.log(tradeStrategyCollector.createJSON());
+    // save the json to a file
+    fs.writeFile('tradeStrategy.json', JSON.stringify(tradeStrategyCollector.createJSON(), null, 2), (err) => {
+        if (err) {
+            console.error('Error writing to file', err);
+        } else {
+            console.log('Trade strategy saved to tradeStrategy.json');
+        }
+    });
+
 };
 
 // Run the test

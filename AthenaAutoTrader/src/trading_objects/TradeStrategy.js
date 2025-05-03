@@ -1,3 +1,7 @@
+import TradeObject from './TradeObject.js';
+import IfBlock from './IfBlock.js';
+import ThenBlock from './ThenBlock.js';
+
 const IterationType = Object.freeze({
     ONCE: 'once',
     ALWAYS: 'always',
@@ -10,7 +14,7 @@ const IterationType = Object.freeze({
 class TradeStrategy {
     constructor() {
         this.tradeObjects = [];
-        this.iterations = IterationType.ONCE; // Default value
+        this.iteration = IterationType.ONCE; // Default value
 
         this.ifBlocks = [];
         this.thenBlock;
@@ -42,25 +46,44 @@ class TradeStrategy {
 
     setIteration(iteration) {
         if (Object.values(IterationType).includes(iteration)) {
-            this.iterations = iteration;
+            this.iteration = iteration;
         } else {
             throw new Error('Invalid IterationType');
         }
+    }
+
+    checkTradeStrategyValidity() {
+        if (this.ifBlocks.length === 0) {
+            throw new Error('At least one IfBlock is required');
+        }
+
+        if (!this.thenBlock) {
+            throw new Error('ThenBlock is required');
+        }
+
+        if (this.tradeObjects.length === 0) {
+            throw new Error('At least one TradeObject is required');
+        }
+
+        if (!this.analyzer) {
+            throw new Error('Analyzer is required for analysis');
+        }
+
+        return true;
     }
 
     // Getters for accessing private properties
     getTradeObjects() {
         return this.tradeObjects;
     }
-
     getIfBlocks() {
         return this.ifBlocks;
     }
     getThenBlock() {
         return this.thenBlock;
     }
-    getIterations() {
-        return this.iterations;
+    getIteration() {
+        return this.iteration;
     }
 }
 

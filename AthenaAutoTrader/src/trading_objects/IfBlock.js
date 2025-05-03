@@ -1,9 +1,9 @@
 class IfBlock {
-    constructor(objectToConsider, comparisonSymbol, value, timeframe, thenValue) {
+    constructor(objectToConsider, comparisonSymbol, value, timeframe_in_seconds) {
         this.objectToConsider = objectToConsider; // e.g., price or RSI
         this.comparisonSymbol = comparisonSymbol; // e.g., '>', '<', '=='
         this.value = value; // the value to compare against
-        this.timeframe = timeframe; // timeframe for the condition
+        this.timeframe_in_seconds = timeframe_in_seconds; // timeframe for the condition
     }
 
     evaluate(currentMarketData) {
