@@ -105,6 +105,7 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
       const strategy = javascriptGenerator.statementToCode(block, 'STRATEGY');
       const startDate = block.getFieldValue('START_DATE');
       const endDate = block.getFieldValue('END_DATE');
+      const initialBudget = block.getFieldValue('INITIAL_BUDGET');
       const interestRate = block.getFieldValue('INTEREST_RATE');
       const costPerTrade = block.getFieldValue('COST_PER_TRADE');
       
@@ -112,8 +113,9 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
         `Analysis Parameters:\n` +
         `- Start Date: ${startDate}\n` +
         `- End Date: ${endDate}\n` +
+        `- Initial Budget: ${initialBudget} EUR\n` +
         `- Interest Rate: ${interestRate}%\n` +
-        `- Cost Per Trade: ${costPerTrade}%\n`
+        `- Cost Per Trade: ${costPerTrade} EUR\n`
     };
 
     // Helper function to create a date field
@@ -244,6 +246,11 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
           this.appendDummyInput()
               .appendField("End Date:")
               .appendField(createDateField(), "END_DATE");
+
+          this.appendDummyInput()
+              .appendField("Initial Budget:")
+              .appendField(new Blockly.FieldNumber(0, 0), "INITIAL_BUDGET")
+              .appendField("EUR");
           
           this.appendDummyInput()
               .appendField("Interest Rate:")
