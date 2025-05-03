@@ -55,6 +55,9 @@ async def gemini(request: Request):
         try:
             response_text = call_gemini()
             logger.info(f"Gemini response (attempt {attempt + 1}):\n" + response_text)
+            if response_text.strip().startswith("```"):
+                response_text = response_text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+
             validated = validate_response_json(response_text)
             return validated.model_dump()
         except (HTTPException, RuntimeError) as e:

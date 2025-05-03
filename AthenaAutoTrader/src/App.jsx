@@ -7,8 +7,30 @@ export default function App() {
   const [aiOutput, setAiOutput] = useState("Waiting for Analyze block...");
 
   const handleClick = async () => {
-    const result = await generateAIResponse("Explain what is important for a trading strategy");
-    setAiOutput(result);
+    const tradingBotJson = "{\n \"tradeStrategies\": [\n {\n \"tradeObjects\": [\n {\n \"shareName\": \"AAPL\"\n }\n ],\n \"iteration\": \"once\",\n \"ifBlocks\": [\n {\n \"objectToConsider\": \"price\",\n \"comparisonSymbol\": \">\",\n \"value\": 100,\n \"timeframe_in_seconds\": \"0\"\n }\n ],\n \"thenBlock\": {\n \"action\": \"buy\",\n \"unitType\": \"%\",\n \"unitValue\": 10\n }\n },\n {\n \"tradeObjects\": [\n {\n \"shareName\": \"AAPL\"\n }\n ],\n \"iteration\": \"once\",\n \"ifBlocks\": [\n {\n \"objectToConsider\": \"price\",\n \"comparisonSymbol\": \"<\",\n \"value\": 150,\n \"timeframe_in_seconds\": \"0\"\n }\n ],\n \"thenBlock\": {\n \"action\": \"sell\",\n \"unitType\": \"%\",\n \"unitValue\": 5\n }\n }\n ],\n \"analyzer\": {\n \"startDateTime\": \"2023-01-01T00:00:00.000Z\",\n \"endDateTime\": \"2023-12-31T00:00:00.000Z\",\n \"interestRate\": 0.05,\n \"costPerTrade\": 0.02,\n \"taxOnProfit\": 0,\n \"outputLog\": [],\n \"otherAnalyzers\": [],\n \"roi\": 0,\n \"annualizedReturn\": 0,\n \"sharpeRatio\": 0,\n \"maxDrawdown\": 0,\n \"winRate\": 0,\n \"profitFactor\": 0\n },\n \"initialBudget\": 10000\n}";
+    const aiResponse = await generateAIResponse(`
+      You are a machine that modifies trading strategy configurations represented in strict JSON format. You must improve the trading logic based on efficiency, profitability, and risk control, especially by:
+      Adjusting buy/sell thresholds, actions, and unit values.
+      Optionally adding a stop-loss strategy (e.g. sell if price drops too far after buying).
+      Optionally using timeframe_in_seconds to simulate conditions like "if X doesn’t happen within Y seconds".
+      Your rules:
+
+      Output only valid raw JSON. No markdown, no comments, no prose.
+      Maintain the exact schema: do not rename keys or introduce new ones.
+      You may duplicate or remove entries in tradeStrategies, but every one must follow the same structure.
+      You may modify comparisonSymbol, value, action, unitType, unitValue, and timeframe_in_seconds.
+      Do not explain your changes.
+      Do not include any text, commentary, or non-JSON output.
+      You may not alter keys inside analyzer, only the values (e.g. simulate ROI change).
+
+      JSON input:  ${tradingBotJson}.
+      Return only the improved JSON. Stop-losses should be implemented using the same logic structure (e.g. a new tradeStrategy that sells a portion of holdings if the price falls below a certain threshold after a buy). Time-based logic can be handled by modifying or setting timeframe_in_seconds. `);
+
+    if (typeof strategy === "string") {
+      setAiOutput("No response from Gemini");
+    } else {
+      setAiOutput(JSON.stringify(aiResponse, null, 2));
+    }
   };
 
   const handleAnalyzeTriggered = (strategy) => {
