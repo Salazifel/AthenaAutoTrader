@@ -4,6 +4,55 @@ import 'blockly/blocks';
 import 'blockly/javascript';
 import { javascriptGenerator } from 'blockly/javascript';
 
+class StockDropdownField extends Blockly.FieldDropdown {
+  constructor(options) {
+    super(options);
+    this.stockData = [];
+    this.loadStockData();
+  }
+
+  async loadStockData() {
+    try {
+      // Use correct path for Vite - adjust if needed
+      const response = await fetch('/src/stock_database/stock_data.json');
+      if (!response.ok) throw new Error('Failed to load');
+      this.stockData = await response.json();
+      this.updateOptions();
+    } catch (error) {
+      console.error('Error loading stock data:', error);
+      this.menuGenerator_ = [['Error loading stocks', '']];
+    }
+    
+  }
+
+  updateOptions() {
+    const stocks = this.stockData.filter(item => item.type === 'stock');
+    const etfs = this.stockData.filter(item => item.type === 'etf');
+    
+    const options = [
+      ['Select stock/ETF...', ''],
+      ['──────────', '']
+    ];
+    
+    if (stocks.length > 0) {
+      options.push(['STOCKS', '']);
+      options.push(...stocks.map(stock => [`• ${stock.name}`, stock.name]));
+    }
+    
+    if (etfs.length > 0) {
+      options.push(['──────────', '']);
+      options.push(['ETFs', '']);
+      options.push(...etfs.map(etf => [`• ${etf.name}`, etf.name]));
+    }
+    
+    this.menuGenerator_ = options;
+  }
+  onItemSelected_(menu, menuItem) {
+    if (menuItem.value_ === null || menuItem.value_ === '') return; // Ignore dividers and headers
+    super.onItemSelected_(menu, menuItem);
+  }
+}
+
 const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
   const blocklyDiv = useRef(null);
 
@@ -17,49 +66,51 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
         init: function() {
           this.appendDummyInput()
               .appendField("IF")
-              .appendField(new Blockly.FieldTextInput("AAPL"), "STOCK")
+              .appendField(new StockDropdownField([['Loading...', '']]), "STOCK")
               .appendField(new Blockly.FieldDropdown([
                 ["increases by", "INCREASES"],
                 ["decreases by", "DECREASES"],
                 ["is higher than", "HIGHER"],
                 ["is lower than", "LOWER"]
               ]), "CONDITION")
-              .appendField(new Blockly.FieldNumber(5), "PERCENT")
+              .appendField(new Blockly.FieldNumber(5, 0), "PERCENT")
               .appendField("% in last")
-              .appendField(new Blockly.FieldNumber(2), "TIMEFRAME")
+              .appendField(new Blockly.FieldNumber(2, 1), "TIMEFRAME")
               .appendField(new Blockly.FieldDropdown([
                 ["days", "DAYS"],
                 ["weeks", "WEEKS"],
                 ["months", "MONTHS"]
               ]), "TIMEUNIT");
+          
+
           this.setOutput(true, "Boolean");
-          this.setColour(230);
+          this.setColour("#3712CB");
           this.setTooltip("Check if a stock price meets a condition");
         }
       };
 
-      // Buy/Sell/Hold actions
+      // Buy/Sell/Hold actions with stock dropdown
       ['buy', 'sell', 'hold'].forEach(action => {
         Blockly.Blocks[`${action}_action`] = {
           init: function() {
             const fields = {
-              buy: { label: "BUY", color: 120 },
-              sell: { label: "SELL", color: 120 },
-              hold: { label: "HOLD", color: 120 }
+              buy: { label: "BUY", color: '#1D1E26'},
+              sell: { label: "SELL", color: '#1D1E26' },
+              hold: { label: "HOLD", color: '#1D1E26' }
             };
             
             this.appendDummyInput()
                 .appendField(fields[action].label)
-                .appendField(new Blockly.FieldTextInput("AAPL"), "STOCK");
+                .appendField(new StockDropdownField([['Loading...', '']]), "STOCK");
             
             if (action !== 'hold') {
               this.appendDummyInput()
-                  .appendField(new Blockly.FieldNumber(100), "AMOUNT")
+                  .appendField(new Blockly.FieldNumber(100, 0), "AMOUNT")
                   .appendField("shares");
             } else {
               this.appendDummyInput()
                   .appendField("for")
-                  .appendField(new Blockly.FieldNumber(7), "DAYS")
+                  .appendField(new Blockly.FieldNumber(7, 1), "DAYS")
                   .appendField("days");
             }
             
@@ -70,7 +121,7 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
         };
       });
 
-      // If-then block with multiple actions
+      // If-then block
       Blockly.Blocks['if_then'] = {
         init: function() {
           this.appendValueInput("CONDITION")
@@ -80,18 +131,18 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
               .appendField("THEN");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
-          this.setColour(210);
+          this.setColour("#808080");
           this.setTooltip("Execute multiple actions when condition is met");
         }
       };
 
-      // Logic blocks (AND/OR)
+      // Logic blocks
       Blockly.Blocks['and_block'] = {
         init: function() {
           this.appendValueInput("A").setCheck("Boolean");
           this.appendValueInput("B").setCheck("Boolean").appendField("AND");
           this.setOutput(true, "Boolean");
-          this.setColour(210);
+          this.setColour("#808080");
         }
       };
 
@@ -100,7 +151,7 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
           this.appendValueInput("A").setCheck("Boolean");
           this.appendValueInput("B").setCheck("Boolean").appendField("OR");
           this.setOutput(true, "Boolean");
-          this.setColour(210);
+          this.setColour("#808080");
         }
       };
 
@@ -109,14 +160,37 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
         init: function() {
           this.appendStatementInput("STRATEGY")
               .appendField("ANALYZE STRATEGY");
-          this.setColour(60);
+          this.setColour("#870BA4");
         }
       };
+
+      // Define JavaScript generators
+      javascriptGenerator['price_condition'] = function(block) {
+        const stock = block.getFieldValue('STOCK');
+        const condition = block.getFieldValue('CONDITION');
+        const percent = block.getFieldValue('PERCENT');
+        const timeframe = block.getFieldValue('TIMEFRAME');
+        const timeunit = block.getFieldValue('TIMEUNIT');
+        return [`${stock} ${condition.toLowerCase()} ${percent}% in last ${timeframe} ${timeunit.toLowerCase()}`, javascriptGenerator.ORDER_ATOMIC];
+      };
+
+      ['buy', 'sell', 'hold'].forEach(action => {
+        javascriptGenerator[`${action}_action`] = function(block) {
+          const stock = block.getFieldValue('STOCK');
+          if (action === 'hold') {
+            const days = block.getFieldValue('DAYS');
+            return `HOLD ${stock} for ${days} days;\n`;
+          } else {
+            const amount = block.getFieldValue('AMOUNT');
+            return `${action.toUpperCase()} ${amount} shares of ${stock};\n`;
+          }
+        };
+      });
     };
 
     defineBlocks();
 
-    // Define toolbox with larger categories
+    // Define toolbox
     const toolbox = {
       kind: 'categoryToolbox',
       contents: [
@@ -124,10 +198,6 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
           kind: 'category',
           name: 'Conditions',
           colour: '#5C81A6',
-          cssConfig: {
-            container: 'category-conditions',
-            icon: 'category-icon-conditions'
-          },
           contents: [
             { kind: 'block', type: 'price_condition' }
           ]
@@ -136,10 +206,6 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
           kind: 'category',
           name: 'Actions',
           colour: '#5CA65C',
-          cssConfig: {
-            container: 'category-actions',
-            icon: 'category-icon-actions'
-          },
           contents: [
             { kind: 'block', type: 'buy_action' },
             { kind: 'block', type: 'sell_action' },
@@ -150,10 +216,6 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
           kind: 'category',
           name: 'Logic',
           colour: '#A65C81',
-          cssConfig: {
-            container: 'category-logic',
-            icon: 'category-icon-logic'
-          },
           contents: [
             { kind: 'block', type: 'if_then' },
             { kind: 'block', type: 'and_block' },
@@ -164,10 +226,6 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
           kind: 'category',
           name: 'Controls',
           colour: '#A6835C',
-          cssConfig: {
-            container: 'category-controls',
-            icon: 'category-icon-controls'
-          },
           contents: [
             { kind: 'block', type: 'analyze_block' }
           ]
@@ -175,27 +233,34 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
       ]
     };
 
-    // Create workspace with custom styling
+    // Create workspace with proper configuration
     const workspace = Blockly.inject(blocklyDiv.current, {
       toolbox: toolbox,
       grid: { spacing: 25, length: 3, colour: '#ccc', snap: true },
-      zoom: { controls: true, wheel: true, startScale: 1.2 },
-      move: { scrollbars: true, drag: true, wheel: true },
+      zoom: { controls: true, wheel: true, startScale: 1.0 },
+      move: { 
+        scrollbars: true,
+        drag: true,
+        wheel: true
+      },
       trashcan: true,
       theme: Blockly.Themes.Dark,
       renderer: 'zelos'
     });
 
-    // Add CSS for larger toolbox categories
+    // Add CSS for proper display
     const style = document.createElement('style');
     style.textContent = `
-      .blocklyToolboxContents {
-        padding: 8px !important;
+      .blocklyToolboxDiv {
+        width: 220px !important;
+        overflow: visible !important;
+        background-color: #2d2d2d !important;
       }
       .blocklyTreeRow {
         padding: 12px 16px !important;
         margin-bottom: 4px !important;
         border-radius: 4px !important;
+        height: auto !important;
       }
       .blocklyTreeRowContentContainer {
         font-size: 16px !important;
@@ -204,25 +269,17 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
       .blocklyText {
         font-size: 14px !important;
       }
-      .blocklyFlyoutLabel {
-        font-size: 14px !important;
+      .blocklyFlyout {
+        margin-left: 100px !important;
+        background-color: transparent !important;
       }
-          .blocklyToolboxDiv {
-    width: 200px !important;
-    overflow: visible !important;
-    
-  }
-  .blocklyTreeRow {
-    height: auto !important;
-    min-height: 32px !important;
-  }
-  .blocklyFlyout {
-    margin-left: 100px !important;
-  }
+      .blocklyMainBackground {
+        fill:rgb(245, 242, 242) !important;
+      }
     `;
     document.head.appendChild(style);
 
-    // Handle analyze button
+    // Handle analyze
     workspace.addChangeListener((event) => {
       const analyzeBlocks = workspace.getBlocksByType('analyze_block');
       if (analyzeBlocks.length > 0) {
