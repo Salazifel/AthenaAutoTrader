@@ -6,7 +6,7 @@ class Portfolio {
         this.cash = 0;
     }
 
-    updatePortfolio(tradeStrategyCollector, timeStamp, shareName, paidPricePerShare, quantity, date) {
+    async updatePortfolio(tradeStrategyCollector, timeStamp, shareName, paidPricePerShare, quantity, date) {
         if (this.tradingObjects[shareName]) {
             if (quantity < 0) {
                 // if quantity is negative, check if we have enough shares to sell, if not, sell all we have
@@ -38,9 +38,10 @@ class Portfolio {
             }
             
             let totalPortfolioValue = 0;
-            for (tradingObject in this.tradingObjects) {
-                const currentPrice = 
-                totalPortfolioValue += this.tradingObjects[tradingObject].quantity * getCurrentPrice(timeStamp, shareName);
+            for (const shareName in this.tradingObjects) {
+                if (this.tradingObjects.hasOwnProperty(shareName)) {
+                    totalPortfolioValue += this.tradingObjects[shareName].quantity * await getCurrentPrice(timeStamp, shareName);
+                }
             }
 
             tradeStrategyCollector.getAnalyzer().appendPortfolioLog(totalPortfolioValue, timeStamp);

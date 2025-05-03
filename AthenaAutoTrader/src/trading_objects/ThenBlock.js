@@ -28,7 +28,7 @@ class ThenBlock {
         this.unitValue = unitValue;
     }
 
-    execute(tradeStrategyCollector, tradeObject, currentTime, currentPrice) {
+    async execute(tradeStrategyCollector, tradeObject, currentTime, currentPrice) {
         if (this.action === ActionEnum.BUY) {
             let purchaseFactor;
 
@@ -49,7 +49,7 @@ class ThenBlock {
             if (purchasePrice + tradeStrategyCollector.getAnalyzer().getCostPerTrade() > tradeStrategyCollector.getPortfolio().getCash()) {
                 tradeStrategyCollector.getAnalyzer().appendToOutputLog(`Not enough budget to buy ${this.unitValue} units of ${tradeObject.getShareName()} at time: ${currentTime}. Current cash: ${tradeStrategyCollector.getPortfolio().getCash()}, required: ${purchasePrice}`);
             }
-            tradeStrategyCollector.getPortfolio().updatePortfolio(tradeStrategyCollector, currentTime, tradeObject.getShareName(), currentPrice, purchaseFactor, currentTime);
+            await tradeStrategyCollector.getPortfolio().updatePortfolio(tradeStrategyCollector, currentTime, tradeObject.getShareName(), currentPrice, purchaseFactor, currentTime);
             tradeStrategyCollector.getPortfolio().updateCash(tradeStrategyCollector, currentTime, - tradeStrategyCollector.getAnalyzer().getCostPerTrade());
             tradeStrategyCollector.getAnalyzer().appendToOutputLog(`Executing action: ${this.action} with unitType: ${this.unitType} and unitValue: ${this.unitValue} for tradeObject: ${tradeObject.getShareName()} at time: ${currentTime} at the price of ${currentPrice} with transaction cost of trade of ${tradeStrategyCollector.getAnalyzer().getCostPerTrade()}. Current cash: ${tradeStrategyCollector.getPortfolio().getCash()}`);
         }
@@ -74,7 +74,7 @@ class ThenBlock {
                     throw new Error(`Invalid unitType: ${this.unitType}`);
             }
 
-            tradeStrategyCollector.getPortfolio().updatePortfolio(tradeStrategyCollector, currentTime, tradeObject.getShareName(), currentPrice, -sellFactor, currentTime);
+            await tradeStrategyCollector.getPortfolio().updatePortfolio(tradeStrategyCollector, currentTime, tradeObject.getShareName(), currentPrice, -sellFactor, currentTime);
             tradeStrategyCollector.getPortfolio().updateCash(tradeStrategyCollector, currentTime, - tradeStrategyCollector.getAnalyzer().getCostPerTrade());
             tradeStrategyCollector.getAnalyzer().appendToOutputLog(`Executing action: ${this.action} with unitType: ${this.unitType} and unitValue: ${this.unitValue} for tradeObject: ${tradeObject.getShareName()} at time: ${currentTime} at the price of ${currentPrice} with transaction cost of trade of ${tradeStrategyCollector.getAnalyzer().getCostPerTrade()}. Current cash: ${tradeStrategyCollector.getPortfolio().getCash()}`);	
         }

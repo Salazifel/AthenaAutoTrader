@@ -29,12 +29,11 @@ class IfBlock {
         }
     }
 
-    checkCondition(historicalData, currentTime) {
-        // historicalData = array of { date, open, high, low, close, adjclose }
+    async checkCondition(currentTime, shareName) {
         // currentTime = a date string or Date object
 
     
-        const currentPrice = getCurrentPrice(currentTime, null, historicalData);
+        const currentPrice = await getCurrentPrice(currentTime, shareName);
     
         // 2️⃣ If timeframe is 0, do a direct comparison
         if (this.timeframe_in_seconds === "0") {
@@ -47,6 +46,7 @@ class IfBlock {
             return this.evaluate({ [this.objectToConsider]: valueToCompare });
         }
     
+        // TODO
         // 3️⃣ Otherwise, find the price at (currentTime - timeframe_in_seconds)
         const pastTime = new Date(now.getTime() - this.timeframe_in_seconds * 1000);
     

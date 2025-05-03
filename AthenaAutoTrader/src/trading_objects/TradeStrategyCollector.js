@@ -61,11 +61,11 @@ class TradeStrategyCollector {
             }
 
             // get historical data for the trade objects in the defined timeframe on the fine-grained level of the interval
-            for (const tradeStrategy of this.tradeStrategies) {
+            /*for (const tradeStrategy of this.tradeStrategies) {
                 for (const tradeObject of tradeStrategy.tradeObjects) {
                     tradeObject.setHistoricalData(await getStockData(tradeObject.getShareName(), tradeStrategy.getIteration(), this.analyzer.getStartDateTime(), this.analyzer.getEndDateTime()));
                 }
-            }
+            }*/
 
             // in the timeframe defined in the analyzer and using the iteration type, make a loop
             let currentTime = this.analyzer.getStartDateTime();
@@ -83,11 +83,11 @@ class TradeStrategyCollector {
                     }
 
                     for (const tradeObject of tradeStrategy.tradeObjects) {
-                        if (tradeStrategy.getIfBlocks().every(ifBlock => ifBlock.checkCondition(tradeObject.getHistoricalData(), currentTime))) {
-                            let currentPrice = getCurrentPrice(tradeObject.getShareName(), currentTime, tradeObject.getHistoricalData());
+                        if (tradeStrategy.getIfBlocks().every(ifBlock => ifBlock.checkCondition(currentTime, tradeObject.getShareName()))) {
+                            let currentPrice = await getCurrentPrice(currentTime, tradeObject.getShareName());
                             // If all conditions
                             // exectute the then block
-                            tradeStrategy.getThenBlock().execute(this, tradeObject, currentTime, currentPrice);
+                            await tradeStrategy.getThenBlock().execute(this, tradeObject, currentTime, currentPrice);
                             if (interval === IterationType.ONCE) {
                                 breakTradeStrategy = true;
                                 break;
