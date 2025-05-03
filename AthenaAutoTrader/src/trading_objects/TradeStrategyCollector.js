@@ -73,6 +73,7 @@ class TradeStrategyCollector {
             let currentTime = this.analyzer.getStartDateTime();
             const endTime = this.analyzer.getEndDateTime();    
             for (const tradeStrategy of this.tradeStrategies) {
+                currentTime = this.analyzer.getStartDateTime();
                 let breakTradeStrategy = false;
                 const interval = tradeStrategy.getIteration();
                 while (true) {

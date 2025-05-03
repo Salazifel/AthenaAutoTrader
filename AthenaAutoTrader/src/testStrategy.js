@@ -11,7 +11,7 @@ const testTradeStrategy = () => {
     const tradeStrategyCollector = new TradeStrategyCollector();
     // define the strategy collector
     const initialBudget = 10000; // Set initial budget for the trade strategy
-    const analyzer = new Analyzer(new Date('2023-01-01'), new Date('2023-01-05'), 0.05, 0.02);
+    const analyzer = new Analyzer(new Date('2023-01-10'), new Date('2023-01-15'), 0.05, 0.02);
     
     // set the definitions of the strategy collector
     tradeStrategyCollector.setInitialBudget(initialBudget);
