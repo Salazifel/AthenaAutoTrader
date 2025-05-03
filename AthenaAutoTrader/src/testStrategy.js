@@ -6,7 +6,6 @@ import TradeStrategyCollector from './trading_objects/TradeStrategyCollector.js'
 import Analyzer from './trading_objects/Analyzer.js'; // Add this missing import
 import fs from 'fs'; // Import the fs module for file operations
 
-
 // Test script
 const testTradeStrategy = () => {
     const tradeStrategyCollector = new TradeStrategyCollector();
