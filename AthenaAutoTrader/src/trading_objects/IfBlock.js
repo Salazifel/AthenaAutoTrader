@@ -1,3 +1,5 @@
+import { getCurrentPrice } from '../stock_data_collector/stockAPI.js';
+
 class IfBlock {
     constructor(objectToConsider, comparisonSymbol, value, timeframe_in_seconds) {
         this.objectToConsider = objectToConsider; // e.g., price or %
@@ -32,23 +34,17 @@ class IfBlock {
         // currentTime = a date string or Date object
 
     
-        // 1️⃣ Find the latest available price at or before currentTime
-        const quotes = historicalData.quotes;
-        for (const quote of quotes) {
-            if (new Date(quote.date) <= currentTime) {
-                currentPrice = quote.close;
-                break;
-            }
-        }
-        
-        if (!currentPrice) {
-            console.log('No stock available on that date');
-            return;
-        }
+        const currentPrice = getCurrentPrice(currentTime, null, historicalData);
     
         // 2️⃣ If timeframe is 0, do a direct comparison
-        if (!this.timeframe_in_seconds || this.timeframe_in_seconds === 0) {
-            return this.evaluate({ [this.objectToConsider]: currentValue });
+        if (this.timeframe_in_seconds === "0") {
+            let valueToCompare;
+            if (this.objectToConsider === 'price') {
+            valueToCompare = currentPrice;
+            } else {
+            throw new Error('Unsupported objectToConsider for timeframe 0');
+            }
+            return this.evaluate({ [this.objectToConsider]: valueToCompare });
         }
     
         // 3️⃣ Otherwise, find the price at (currentTime - timeframe_in_seconds)

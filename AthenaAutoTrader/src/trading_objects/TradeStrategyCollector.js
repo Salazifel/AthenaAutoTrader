@@ -3,6 +3,9 @@ import Analyzer from './Analyzer.js'; // Assuming you have an Analyzer class def
 import { getStockData } from '../stock_data_collector/stockAPI.js';
 import Portfolio from '../trading_objects/Portfolio.js';
 import { IterationType } from './TradeStrategy.js'; // Assuming you have an IterationType enum defined somewhere
+import fs from 'fs'; // Import the fs module for file operations
+import { getCurrentPrice } from '../stock_data_collector/stockAPI.js'; // Assuming you have a function to get the current price
+import { get } from 'http';
 
 class TradeStrategyCollector {
   constructor() {
@@ -31,6 +34,10 @@ class TradeStrategyCollector {
       throw new Error('Invalid Analyzer instance');
     }
   }
+
+  getAnalyzer() {
+    return this.analyzer;
+}
 
   setInitialBudget(initialBudget) {
     if (typeof initialBudget !== 'number') {
@@ -64,19 +71,26 @@ class TradeStrategyCollector {
             let currentTime = this.analyzer.getStartDateTime();
             const endTime = this.analyzer.getEndDateTime();    
             for (const tradeStrategy of this.tradeStrategies) {
+                let breakTradeStrategy = false;
                 const interval = tradeStrategy.getIteration();
                 while (true) {
+                    if (breakTradeStrategy) {
+                        break;
+                    }
+
                     if (this.addIterationToDateTime(currentTime, interval) > endTime) {
                         break;
                     }
 
                     for (const tradeObject of tradeStrategy.tradeObjects) {
                         if (tradeStrategy.getIfBlocks().every(ifBlock => ifBlock.checkCondition(tradeObject.getHistoricalData(), currentTime))) {
+                            let currentPrice = getCurrentPrice(tradeObject.getShareName(), currentTime, tradeObject.getHistoricalData());
                             // If all conditions
                             // exectute the then block
-                            tradeStrategy.getThenBlock().execute(self, tradeObject, currentTime, this.initialBudget);
+                            tradeStrategy.getThenBlock().execute(this, tradeObject, currentTime, currentPrice);
                             if (interval === IterationType.ONCE) {
-                                break; // Exit the loop if the iteration is ONCE
+                                breakTradeStrategy = true;
+                                break;
                             }
                         }
                     }
@@ -84,14 +98,21 @@ class TradeStrategyCollector {
                 }
             }
 
-            analyzerLogs = this.analyzer.getOutputLog();
+            let analyzerLogs = this.analyzer.getOutputLog();
             for (const log of analyzerLogs) {
                 console.log(log);
             }
             console.log('Trade strategy executed successfully.');
 
             // save the logs to a file
-            const logFileName = `trade_strategy_log_${new Date().toISOString()}.txt`;
+            fs.writeFile('tradeStrategyLogs.json', JSON.stringify(analyzerLogs, null, 2), (err) => {
+                if (err) {
+                    console.error('Error writing to file', err);
+                }
+                else {
+                    console.log('Trade strategy logs saved to tradeStrategyLogs.json');
+                }
+            });
         } catch (error) {
             console.error('Error executing trade strategy:', error.message);
         }
