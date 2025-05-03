@@ -104,7 +104,7 @@ class TradeStrategyCollector {
             }
 
             // save the logs to a file
-            fs.writeFile('tradeStrategyLogs.json', JSON.stringify(this.analyzer.getOutputLog(), null, 2), (err) => {
+            /*fs.writeFile('tradeStrategyLogs.json', JSON.stringify(this.analyzer.getOutputLog(), null, 2), (err) => {
                 if (err) {
                     console.error('Error writing to file', err);
                 }
@@ -131,7 +131,7 @@ class TradeStrategyCollector {
                 else {
                     console.log('Trade strategy portfolio value logs saved to tradeStrategyPortfolioValue.json');
                 }
-            });
+            });*/
 
             // close the connection to the database
             await closeConnection();

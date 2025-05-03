@@ -47,13 +47,13 @@ const testTradeStrategy = () => {
     console.log(tradeStrategyCollector.createJSON());
     // save the json to a file
     const jsonString = tradeStrategyCollector.createJSON();
-    fs.writeFileSync('tradeStrategy.json', jsonString, 'utf8', (err) => {
+    /*fs.writeFileSync('tradeStrategy.json', jsonString, 'utf8', (err) => {
         if (err) {
             console.error('Error writing to file', err);
         } else {
             console.log('File has been written successfully');
         }
-    });
+    });*/
 
     // Execute the trade strategy
     tradeStrategyCollector.executeTradeStrategy();
