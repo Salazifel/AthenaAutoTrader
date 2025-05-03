@@ -103,7 +103,36 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
     
     javascriptGenerator.forBlock['analyze_block'] = function(block) {
       const strategy = javascriptGenerator.statementToCode(block, 'STRATEGY');
-      return `STRATEGY TO ANALYZE:\n${strategy}`;
+      const startDate = block.getFieldValue('START_DATE');
+      const endDate = block.getFieldValue('END_DATE');
+      const interestRate = block.getFieldValue('INTEREST_RATE');
+      const costPerTrade = block.getFieldValue('COST_PER_TRADE');
+      
+      return `STRATEGY TO ANALYZE:\n${strategy}\n` +
+        `Analysis Parameters:\n` +
+        `- Start Date: ${startDate}\n` +
+        `- End Date: ${endDate}\n` +
+        `- Interest Rate: ${interestRate}%\n` +
+        `- Cost Per Trade: ${costPerTrade}%\n`
+    };
+
+    // Helper function to create a date field
+    const createDateField = () => {
+      // Get today's date as YYYY-MM-DD
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
+      
+      return new Blockly.FieldTextInput(todayStr, function(text) {
+        // Basic validation for YYYY-MM-DD format
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(text)) {
+          return null;
+        }
+        return text;
+      });
     };
 
     // Define custom blocks
@@ -201,12 +230,33 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
         }
       };
 
-      // Analyze block
+      // Enhanced Analyze block with parameters
       Blockly.Blocks['analyze_block'] = {
         init: function() {
           this.appendStatementInput("STRATEGY")
               .appendField("ANALYZE STRATEGY");
+          
+          // Add parameters as input fields
+          this.appendDummyInput()
+              .appendField("Start Date:")
+              .appendField(createDateField(), "START_DATE");
+          
+          this.appendDummyInput()
+              .appendField("End Date:")
+              .appendField(createDateField(), "END_DATE");
+          
+          this.appendDummyInput()
+              .appendField("Interest Rate:")
+              .appendField(new Blockly.FieldNumber(5, 0, 100, 0.1), "INTEREST_RATE")
+              .appendField("%");
+            
+            this.appendDummyInput()
+              .appendField("Cost Per Trade:")
+              .appendField(new Blockly.FieldNumber(0, 0, Infinity, 0.01), "COST_PER_TRADE")
+              .appendField("EUR");
+
           this.setColour("#870BA4");
+          this.setTooltip("Analyze your trading strategy with custom parameters");
         }
       };
     };
