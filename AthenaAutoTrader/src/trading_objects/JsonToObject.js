@@ -1,32 +1,30 @@
 import TradeStrategyCollector from './TradeStrategyCollector.js';
 import TradeStrategy from './TradeStrategy.js';
 import Analyzer from './Analyzer.js';
+import TradeObject from './TradeObject.js';
+import IfBlock from './IfBlock.js';
+import ThenBlock from './ThenBlock.js';
 import fs from 'fs'; // Import the fs module for file operations
 
 export function parseJSONToTradeStrategyCollector(jsonString) {
     const data = JSON.parse(jsonString);
-
-
-    // Reconstruct trade strategies
-    if (Array.isArray(data.tradeStrategies)) {
-        data.tradeStrategies.forEach(strategyData => {
-            const tradeStrategy = Object.assign(new TradeStrategy(), strategyData);
-            tradeStrategyCollector.addTradeStrategy(tradeStrategy);
+    const tradeStrategies = data.tradeStrategies.map(strategyData => {
+        const tradeStrategy = new TradeStrategy();
+        tradeStrategy.setIteration(strategyData.iteration);
+        tradeStrategy.addTradeObject(new TradeObject(strategyData.tradeObject.shareName));
+        tradeStrategy.setThenBlock(new ThenBlock(strategyData.thenBlock.action, strategyData.thenBlock.unitType, strategyData.thenBlock.unitValue));
+        strategyData.ifBlocks.forEach(ifBlockData => {
+            const ifBlock = new IfBlock(ifBlockData.objectToConsider, ifBlockData.comparisonSymbol, ifBlockData.value, ifBlockData.timeframe_in_seconds);
+            tradeStrategy.addIfBlock(ifBlock);
         });
-    }
-
-    // Reconstruct analyzer
-    if (data.analyzer) {
-        const analyzer = Object.assign(new Analyzer(), data.analyzer);
-        tradeStrategyCollector.setAnalyzer(analyzer);
-    }
-
-    // Set initial budget
-    if (typeof data.initialBudget === 'number') {
-        tradeStrategyCollector.setInitialBudget(data.initialBudget);
-    }
+        return tradeStrategy;
+    });
+    const initialBudget = data.initialBudget || 0;  
+    const analyzer = new Analyzer(new Date(data.analyzer.startDateTime), new Date(data.analyzer.endDateTime), data.analyzer.interestRate, data.analyzer.costPerTrade);
+    const tradeStrategyCollector = new TradeStrategyCollector(tradeStrategies, initialBudget, analyzer);
 
     return tradeStrategyCollector;
+
 }
 
 const jsonString = fs.readFileSync('tradeStrategy.json', 'utf8');
