@@ -8,10 +8,10 @@ import { getCurrentPrice } from '../stock_data_collector/stockAPI.js'; // Assumi
 
 
 class TradeStrategyCollector {
-  constructor() {
-    this.tradeStrategies = []; // Array to hold trade strategies
-    this.analyzer = null; // Placeholder for an analyzer object
-    this.initialBudget = 0;
+  constructor(tradeStrategies, initialBudget, analyzer) {
+    this.tradeStrategies = tradeStrategies || [];
+    this.analyzer = analyzer;
+    this.initialBudget = initialBudget || 0; // Initial budget for the trade strategy
     this.portfolio = new Portfolio();
   }
 
