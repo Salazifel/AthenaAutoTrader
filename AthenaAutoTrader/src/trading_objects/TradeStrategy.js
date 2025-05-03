@@ -12,12 +12,12 @@ const IterationType = Object.freeze({
 });
 
 class TradeStrategy {
-    constructor() {
-        this.tradeObjects = [];
-        this.iteration = IterationType.ONCE; // Default value
+    constructor(tradeObjects = null, iteration = IterationType.ONCE, ifBlocks = null, thenBlock = null) {
+        this.tradeObjects = tradeObjects || [];
+        this.iteration = iteration;
 
-        this.ifBlocks = [];
-        this.thenBlock;
+        this.ifBlocks = ifBlocks || [];
+        this.thenBlock = thenBlock;
     }
 
     addIfBlock(ifBlock) {

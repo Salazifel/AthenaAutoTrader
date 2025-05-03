@@ -1,5 +1,5 @@
 class Analyzer {
-    constructor(startDateTime, endDateTime, interestRate, costPerTrade = 0, taxOnProfit = 0) {
+    constructor(startDateTime, endDateTime, interestRate, costPerTrade = 0) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.interestRate = interestRate; // Interest rate for comparison
