@@ -24,6 +24,13 @@ export default function App() {
     setAiOutput(
       "Running analysis... Please wait."
     );
+    const humanReadableResponse = await generateAIResponse(`
+      You are a financial analyst. Your task is to analyze a trading strategy represented in JSON format. The JSON contains a list of trade strategies, each with its own conditions and actions. You need to evaluate the efficiency, profitability, and risk control of these strategies based on the provided parameters.
+      You will be provided context about how it has performed in the past, including profits, cash balance and ROI. You should analyze it and provide some short suggestions (100 words absolute max) for the user to take as feedback. The data you should analyze is as follows:
+      JSON input:  ${tradingBotJson}.
+      `);
+
+
     const aiResponse = await generateAIResponse(`
       You are a machine that modifies trading strategy configurations represented in strict JSON format. You must improve the trading logic based on efficiency, profitability, and risk control, especially by:
       Adjusting buy/sell thresholds, actions, and unit values.

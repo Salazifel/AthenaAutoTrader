@@ -5,17 +5,14 @@ import TradeStrategy from './trading_objects/TradeStrategy.js';
 import TradeStrategyCollector from './trading_objects/TradeStrategyCollector.js';
 import Analyzer from './trading_objects/Analyzer.js'; // Add this missing import
 import fs from 'fs'; // Import the fs module for file operations
+import { json } from 'stream/consumers';
 
 // Test script
 const testTradeStrategy = () => {
     const tradeStrategyCollector = new TradeStrategyCollector();
     // define the strategy collector
     const initialBudget = 10000; // Set initial budget for the trade strategy
-    const analyzer = new Analyzer(new Date('2023-01-01'), new Date('2023-01-05'), 0.05, 0.02);
-    
-    // set the definitions of the strategy collector
-    tradeStrategyCollector.setInitialBudget(initialBudget);
-    tradeStrategyCollector.setAnalyzer(analyzer);
+    const analyzer = new Analyzer(new Date('2023-01-10'), new Date('2023-01-15'), 0.05, 0.02);
     
     // ########### let's create a buy strategy for a stock
     const buyingTradeStrategy = new TradeStrategy();
@@ -29,6 +26,10 @@ const testTradeStrategy = () => {
     buyingTradeStrategy.setIteration('per_day');
     // Add the strategy to the collector
     tradeStrategyCollector.addTradeStrategy(buyingTradeStrategy);
+
+    // set the definitions of the strategy collector
+    tradeStrategyCollector.setAnalyzer(analyzer);
+    tradeStrategyCollector.setInitialBudget(initialBudget);
 
     // ########### let's create a sell strategy for a stock
     const sellingTradeStrategy = new TradeStrategy();
@@ -45,11 +46,12 @@ const testTradeStrategy = () => {
 
     console.log(tradeStrategyCollector.createJSON());
     // save the json to a file
-    fs.writeFile('tradeStrategy.json', JSON.stringify(tradeStrategyCollector.createJSON(), null, 2), (err) => {
+    const jsonString = tradeStrategyCollector.createJSON();
+    fs.writeFileSync('tradeStrategy.json', jsonString, 'utf8', (err) => {
         if (err) {
             console.error('Error writing to file', err);
         } else {
-            console.log('Trade strategy saved to tradeStrategy.json');
+            console.log('File has been written successfully');
         }
     });
 
