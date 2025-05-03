@@ -1,12 +1,13 @@
-import yahooFinance from 'yahoo-finance2';
-import { IterationType } from '../trading_objects/TradeStrategy.js';
-import fs from 'fs'; // Import the fs module for file operations
-
+// import yahooFinance from 'yahoo-finance2';
+// import { IterationType } from '../trading_objects/TradeStrategy.js';
+// import fs from 'fs'; // Import the fs module for file operations
 import { MongoClient } from 'mongodb';
 
-const uri= "mongodb+srv://AthenaAutoTrader:hackUPC2025winner!@athena.4buv5xy.mongodb.net/";
+const uri = "mongodb+srv://AthenaAutoTrader:hackUPC2025winner!@athena.4buv5xy.mongodb.net/";
 const client = new MongoClient(uri);
 const dbName = 'stock_db';
+
+let isConnected = false;
 
 async function getStockData(tradeObject, startDate, endDate) {
     if (!tradeObject || !startDate || !endDate) {
@@ -19,31 +20,43 @@ async function getStockData(tradeObject, startDate, endDate) {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-
-    const query = {
-        Date: { $gte: start, $lte: end }
-    };
-
-    const options = {
-        sort: { Date: 1 },
-        projection: { _id: 0 }
-    };
-
     try {
-        await client.connect();
+        if (!isConnected) {
+            await client.connect();
+            isConnected = true;
+        }
+
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+
+        const query = {
+            Date: { $gte: start, $lte: end }
+        };
+
+        const options = {
+            sort: { Date: 1 },
+            projection: { _id: 0 }
+        };
+
         const results = await collection.find(query, options).toArray();
         return results;
     } catch (err) {
         console.error(`MongoDB query failed for ${ticker}:`, err);
         throw err;
-    } finally {
-        await client.close();
     }
 }
 
+process.on('SIGINT', async () => {
+    console.log('Shutting down gracefully...');
+    if (isConnected) {
+        await client.close();
+        console.log('MongoDB connection closed.');
+    }
+    process.exit(0);
+});
+
 export { getStockData };
+
 
 
 async function getCurrentPrice(currenttime, shareName) {
