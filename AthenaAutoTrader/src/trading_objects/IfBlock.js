@@ -2,7 +2,7 @@ import { getCurrentPrice } from '../stock_data_collector/stockAPI.js';
 
 class IfBlock {
     constructor(objectToConsider, comparisonSymbol, value, timeframe_in_seconds) {
-        this.objectToConsider = objectToConsider; // e.g., price or %
+        this.objectToConsider = objectToConsider; // e.g., price or percentage
         this.comparisonSymbol = comparisonSymbol; // e.g., '>', '<', '=='
         this.value = value; // the value to compare against
         this.timeframe_in_seconds = timeframe_in_seconds; // timeframe for the condition

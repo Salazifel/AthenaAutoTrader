@@ -1,5 +1,6 @@
 from typing import List, Literal, Union
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class TradeObject(BaseModel):
@@ -7,40 +8,45 @@ class TradeObject(BaseModel):
 
 
 class IfBlock(BaseModel):
-    objectToConsider: Literal["price"]  # expand if more are added
+    objectToConsider: Literal["price", "percentage"]  # expand if more are added
     comparisonSymbol: Literal["<", ">", "<=", ">=", "==", "!="]
     value: Union[int, float]
-    timeframe_in_seconds: str  # if always string in input, else make this Union[str, int]
+    timeframe_in_seconds: str
 
 
 class ThenBlock(BaseModel):
     action: Literal["buy", "sell"]
-    unitType: Literal['%', 'units', 'absolute']
+    unitType: Literal['%', 'shares', 'absolute']
     unitValue: Union[int, float]
 
 
 class TradeStrategy(BaseModel):
     tradeObjects: List[TradeObject]
-    iteration: Literal["once", "loop"]
+    iteration: Literal["once", "per_day", "per_week", "per_month"]
     ifBlocks: List[IfBlock]
     thenBlock: ThenBlock
 
-
 class Analyzer(BaseModel):
-    startDateTime: str
-    endDateTime: str
+    startDateTime: datetime
+    endDateTime: datetime
     interestRate: float
     costPerTrade: float
-    taxOnProfit: float
-    outputLog: List = Field(default_factory=list)
-    otherAnalyzers: List = Field(default_factory=list)
-    roi: float
-    annualizedReturn: float
-    sharpeRatio: float
-    maxDrawdown: float
-    winRate: float
-    profitFactor: float
+    outputLog: List = Field(default_factory=list) # must be empty at the start
+    cashLog : List = Field(default_factory=list) # must be empty at the start
+    porfolioLog : List = Field(default_factory=list) # must be empty at the start
+    otherAnalyzers: List = Field(default_factory=list) # must be empty at the start
 
+    roi: float = 0.0 # must be empty at the start
+    sharpeRatio: float = 0.0 # must be empty at the start
+    maxDrawdown: float = 0.0 # must be empty at the start
+    winRate: float = 0.0 # must be empty at the start
+    profitFactor: float = 0.0 # must be empty at the start
+    annualizedReturn: float = 0.0 # must be empty at the start
+
+class TradeStrategyCollector(BaseModel):
+    tradeStrategies: List[TradeStrategy] = Field(default_factory=list) # must be empty at the start
+    initialBudget: float = 0.0 # must be empty at the start
+    analyzer: Analyzer
 
 class StrategyJson(BaseModel):
     tradeStrategies: List[TradeStrategy]
