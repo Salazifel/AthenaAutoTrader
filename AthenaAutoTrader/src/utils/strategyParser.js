@@ -22,6 +22,7 @@ export function parseStrategyToJson(strategyText) {
         const conditionMatch = line.match(/IF (\w+) (increases|decreases) (\d+)% in last (\d+) (days|weeks|months)/i);
         if (conditionMatch) {
           const [, stock, direction, percent, timeframe, timeunit] = conditionMatch;
+          console.log(`Condition: ${stock} ${direction} ${percent}% in last ${timeframe} ${timeunit}`);
           
           let timeframeInSeconds = parseInt(timeframe);
           if (timeunit === 'weeks') timeframeInSeconds *= 7 * 24 * 60 * 60;
