@@ -53,13 +53,7 @@ class IfBlock {
 
         // calculate the percentage change
         const valueToCompare = ((endPrice - startPrice) / startPrice) * 100; // percentage change
-        if (this.objectToConsider === 'price') {
-            throw new Error('Unsupported objectToConsider for timeframe > 0');
-        } else if (this.objectToConsider === 'percentage') {
-            // If the object to consider is percentage, we can directly use the valueToCompare
-        } else {
-            throw new Error('Unsupported objectToConsider');
-        }
+
     
         return this.evaluate({ [this.objectToConsider]: valueToCompare });
     }    

@@ -6,7 +6,6 @@ import { generateAIResponse } from "./geminiApi";
 
 import {
   createTradeObject,
-  createIteration,
   createIfBlock,
   createThenBlock,
   createTradeStrategy,
@@ -111,13 +110,30 @@ export default function App() {
     const handleAnalyzeTriggered = (strategy) => {
       try {
         const strategyJson = typeof strategy === 'string' ? JSON.parse(strategy) : strategy;
+        if (strategyJson.analyzer.startDateTime) {
+          strategyJson.analyzer.startDateTime = new Date(strategyJson.analyzer.startDateTime);
+          if (isNaN(strategyJson.analyzer.startDateTime.getTime())) {
+            throw new Error("Invalid start date");
+          }
+        }
         
+        if (strategyJson.analyzer.endDateTime) {
+          strategyJson.analyzer.endDateTime = new Date(strategyJson.analyzer.endDateTime);
+          if (isNaN(strategyJson.analyzer.endDateTime.getTime())) {
+            throw new Error("Invalid end date");
+          }
+        }
+    
+        // Ensure end date is after start date
+        if (strategyJson.analyzer.endDateTime <= strategyJson.analyzer.startDateTime) {
+          throw new Error("End date must be after start date");
+        }
         const tradeStrategies = strategyJson.tradeStrategies.map(strat => {
           const tradeObjects = strat.tradeObjects.map(obj => 
             createTradeObject(obj.shareName)
           );
           
-          const iteration = createIteration('per_day');
+          const iteration = 'per_day';
           
           const ifBlocks = strat.ifBlocks.map(block => 
             createIfBlock(
