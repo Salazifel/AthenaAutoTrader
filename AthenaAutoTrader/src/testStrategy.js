@@ -3,9 +3,7 @@ import ThenBlock from './trading_objects/ThenBlock.js';
 import TradeObject from './trading_objects/TradeObject.js';
 import TradeStrategy from './trading_objects/TradeStrategy.js';
 import TradeStrategyCollector from './trading_objects/TradeStrategyCollector.js';
-import Analyzer from './trading_objects/Analyzer.js'; // Add this missing import
-import fs from 'fs'; // Import the fs module for file operations
-import { json } from 'stream/consumers';
+import Analyzer from './trading_objects/Analyzer.js';
 
 // Test script
 const testTradeStrategy = () => {
