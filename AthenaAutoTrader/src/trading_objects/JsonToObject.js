@@ -4,7 +4,7 @@ import Analyzer from './Analyzer.js';
 import TradeObject from './TradeObject.js';
 import IfBlock from './IfBlock.js';
 import ThenBlock from './ThenBlock.js';
-import fs from 'fs'; // Import the fs module for file operations
+// import fs from 'fs'; // Import the fs module for file operations
 
 export function parseJSONToTradeStrategyCollector(jsonString) {
     const data = JSON.parse(jsonString);
@@ -29,5 +29,5 @@ export function parseJSONToTradeStrategyCollector(jsonString) {
 
 }
 
-const jsonString = fs.readFileSync('tradeStrategy.json', 'utf8');
-parseJSONToTradeStrategyCollector(jsonString);
+// const jsonString = fs.readFileSync('tradeStrategy.json', 'utf8');
+// parseJSONToTradeStrategyCollector(jsonString);
