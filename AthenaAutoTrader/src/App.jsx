@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import BlocklyWorkspace from "./BlocklyWorkspace";
 import AnalysisModal from "./AnalysisModal";
+import AssetChart from './AssetChart';
 import revolutLogo from './assets/revolut-logo.png';
 import { generateAIResponse } from "./geminiApi";
 
@@ -309,9 +310,13 @@ export default function App() {
               margin: 0
             }}>{analysisStrategy}</pre>
           </div>
+              <h1>Athena AutoTrader</h1>
+              <div style={{ height: "250px"}}>
+                <AssetChart />
+              </div>
           <div style={{
             marginTop: '1rem',
-            paddingTop: '0.5rem',
+            paddingTop: '1rem',
             borderTop: '1px solid #222',
             display: 'flex',
             justifyContent: 'flex-end'

@@ -21,7 +21,7 @@ class ThenBlock(BaseModel):
 
 class TradeStrategy(BaseModel):
     tradeObjects: List[TradeObject]
-    iteration: Literal["once", "loop"]
+    iteration: Literal["once", "loop", "absolute", "always"]
     ifBlocks: List[IfBlock]
     thenBlock: ThenBlock
 
