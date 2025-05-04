@@ -1,16 +1,25 @@
 export function parseStrategyToJson(strategyText) {
-    const lines = strategyText.split('\n').map(line => line.trim()).filter(line => line);
+  const lines = strategyText.split('\n').map(line => line.trim()).filter(line => line);
     
-    // Extract analysis parameters
-    const params = {};
-    for (const line of lines) {
-      if (line.startsWith('- Start Date:')) params.startDate = line.split(':')[1].trim().split(' ')[0];
-      if (line.startsWith('- End Date:')) params.endDate = line.split(':')[1].trim().split(' ')[0];
-      if (line.startsWith('- Initial Budget:')) params.initialBudget = parseFloat(line.split(':')[1].trim());
-      if (line.startsWith('- Interest Rate:')) params.interestRate = parseFloat(line.split(':')[1].trim()) / 100;
-      if (line.startsWith('- Cost Per Trade:')) params.costPerTrade = parseFloat(line.split(':')[1].trim());
+  // Extract analysis parameters
+  const params = {};
+  for (const line of lines) {
+    if (line.startsWith('- Start Date:')) {
+      const dateStr = line.split(':')[1].trim();
+      // Parse date in local timezone and convert to ISO string
+      params.startDate = new Date(dateStr);
     }
-    
+    if (line.startsWith('- End Date:')) {
+      const dateStr = line.split(':')[1].trim();
+      // Parse date in local timezone and convert to ISO string
+      params.endDate = new Date(dateStr);
+    }
+
+
+    if (line.startsWith('- Initial Budget:')) params.initialBudget = parseFloat(line.split(':')[1].trim());
+    if (line.startsWith('- Interest Rate:')) params.interestRate = parseFloat(line.split(':')[1].trim()) / 100;
+    if (line.startsWith('- Cost Per Trade:')) params.costPerTrade = parseFloat(line.split(':')[1].trim());
+  }
     // Extract strategy blocks
     const strategyLines = lines.filter(line => line.startsWith('IF') || line.startsWith('SELL') || line.startsWith('BUY') || line.startsWith('HOLD'));
     
@@ -74,8 +83,8 @@ export function parseStrategyToJson(strategyText) {
       tradeStrategies,
       initialBudget: params.initialBudget,
       analyzer: {
-        startDateTime: `${params.startDate}T00:00:00.000Z`,
-        endDateTime: `${params.endDate}T00:00:00.000Z`,
+        startDateTime: params.startDate,  
+        endDateTime: params.endDate,     
         interestRate: params.interestRate,
         costPerTrade: params.costPerTrade,
         taxOnProfit: 0,

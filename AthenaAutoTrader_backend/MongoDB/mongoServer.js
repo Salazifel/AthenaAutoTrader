@@ -1,6 +1,6 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
-
+const cors = require('cors');
 // Hard-coded configuration
 const app = express();
 const PORT = 3000;
@@ -38,6 +38,12 @@ async function getStockData(ticker, startDate, endDate) {
   const results = await collection.find(query, options).toArray();
   return results;
 }
+
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Endpoint: GET /api/stock?symbol=XYZ&start=YYYY-MM-DD&end=YYYY-MM-DD
 app.get('/api/stock', async (req, res) => {

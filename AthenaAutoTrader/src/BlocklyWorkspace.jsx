@@ -137,23 +137,18 @@ const BlocklyWorkspace = ({ onAnalyzeTriggered }) => {
         `- Cost Per Trade: ${costPerTrade} EUR\n`
     };
 
-    // Helper function to create a date field
     const createDateField = () => {
-      // Get today's date as YYYY-MM-DD
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
-      const todayStr = `${year}-${month}-${day}`;
-      
-      return new Blockly.FieldTextInput(todayStr, function(text) {
-        // Basic validation for YYYY-MM-DD format
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!dateRegex.test(text)) {
-          return null;
+      return new Blockly.FieldTextInput(
+        new Date().toLocaleDateString(), // Use locale-specific format
+        function(text) {
+          // Try parsing in multiple formats
+          const parsedDate = new Date(text);
+          if (isNaN(parsedDate.getTime())) {
+            return null; // Invalid date
+          }
+          return parsedDate;
         }
-        return text;
-      });
+      );
     };
 
     // Define custom blocks

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import BlocklyWorkspace from "./BlocklyWorkspace";
 import AnalysisModal from "./AnalysisModal";
+import AssetChart from './AssetChart';
 import revolutLogo from './assets/revolut-logo.png';
 import { generateAIResponse } from "./geminiApi";
 
 import {
   createTradeObject,
-  createIteration,
   createIfBlock,
   createThenBlock,
   createTradeStrategy,
@@ -111,13 +111,30 @@ export default function App() {
     const handleAnalyzeTriggered = (strategy) => {
       try {
         const strategyJson = typeof strategy === 'string' ? JSON.parse(strategy) : strategy;
+        if (strategyJson.analyzer.startDateTime) {
+          strategyJson.analyzer.startDateTime = new Date(strategyJson.analyzer.startDateTime);
+          if (isNaN(strategyJson.analyzer.startDateTime.getTime())) {
+            throw new Error("Invalid start date");
+          }
+        }
         
+        if (strategyJson.analyzer.endDateTime) {
+          strategyJson.analyzer.endDateTime = new Date(strategyJson.analyzer.endDateTime);
+          if (isNaN(strategyJson.analyzer.endDateTime.getTime())) {
+            throw new Error("Invalid end date");
+          }
+        }
+    
+        // Ensure end date is after start date
+        if (strategyJson.analyzer.endDateTime <= strategyJson.analyzer.startDateTime) {
+          throw new Error("End date must be after start date");
+        }
         const tradeStrategies = strategyJson.tradeStrategies.map(strat => {
           const tradeObjects = strat.tradeObjects.map(obj => 
             createTradeObject(obj.shareName)
           );
           
-          const iteration = createIteration('per_day');
+          const iteration = 'per_day';
           
           const ifBlocks = strat.ifBlocks.map(block => 
             createIfBlock(
@@ -309,9 +326,13 @@ export default function App() {
               margin: 0
             }}>{analysisStrategy}</pre>
           </div>
+              <h1>Athena AutoTrader</h1>
+              <div style={{ height: "250px"}}>
+                <AssetChart />
+              </div>
           <div style={{
             marginTop: '1rem',
-            paddingTop: '0.5rem',
+            paddingTop: '1rem',
             borderTop: '1px solid #222',
             display: 'flex',
             justifyContent: 'flex-end'
