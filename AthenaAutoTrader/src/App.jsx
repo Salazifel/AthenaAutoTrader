@@ -150,7 +150,7 @@ export default function App() {
           analyzer
         );
 
-        collector.executeTradeStrategy();
+        const result = collector.executeTradeStrategy();
         
         console.log("Created strategy collector:", collector);
         
