@@ -5,6 +5,8 @@ import TradeStrategy from './TradeStrategy.js'
 import Analyzer from './Analyzer.js'
 import IterationType from './TradeStrategy.js'
 import TradeStrategyCollector from './TradeStrategyCollector.js'
+import { parseJSONToTradeStrategyCollector } from './JsonToObject.js'
+import fs from 'fs' // Import the fs module for file operations
 
 export function createTradeObject(shareName) {
     return new TradeObject(shareName)
@@ -33,3 +35,18 @@ export function createAnalyzer(startDateTime, endDateTime, interestRate, costPer
 export function createTradeStrategyCollector(tradeStrategies, initialBudget, analyzer) {
     return new TradeStrategyCollector(tradeStrategies, initialBudget, analyzer)
 }
+
+export function runAutoTraderFromJSON(jsonSting) {
+    try {
+        const tradeStrategyCollector = parseJSONToTradeStrategyCollector(jsonSting)
+        return tradeStrategyCollector.executeTradeStrategy()
+    }
+    catch (error) {
+        console.error('Error executing trade strategy:', error)
+        return null
+    }
+}
+
+// Example usage
+//const jsonSting = fs.readFileSync('tradeStrategy.json', 'utf8')
+//runAutoTraderFromJSON(jsonSting)

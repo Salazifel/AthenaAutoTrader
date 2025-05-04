@@ -139,6 +139,14 @@ class TradeStrategyCollector {
                 }
             });*/
 
+            const output = {
+                outputLog: this.analyzer.getOutputLog(),
+                cashLog: this.analyzer.getCashLog(),
+                portfolioLog: this.analyzer.getPortfolioLog()
+            };
+
+            return output;
+
         } catch (error) {
             console.error('Error executing trade strategy:', error.message);
         }
