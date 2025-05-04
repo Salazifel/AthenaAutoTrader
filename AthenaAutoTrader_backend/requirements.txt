@@ -5,5 +5,3 @@ requests
 pymongo
 yfinance
 pandas
-matplotlib
-flask
