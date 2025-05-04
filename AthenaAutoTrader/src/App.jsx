@@ -94,6 +94,25 @@ export default function App() {
       You may modify comparisonSymbol, value, action, unitType, unitValue, and timeframe_in_seconds.
       Do not explain your changes.
       Do not include any text, commentary, or non-JSON output.
+
+      Here is some of the JSON schema you need to follow:
+      class IfBlock(BaseModel):
+          objectToConsider: Literal["price", "percentage"]  # expand if more are added
+          comparisonSymbol: Literal["<", ">", "<=", ">=", "==", "!="]
+          value: Union[int, float]
+          timeframe_in_seconds: str
+          
+      class ThenBlock(BaseModel):
+          action: Literal["buy", "sell"]
+          unitType: Literal['%', 'shares', 'absolute']
+          unitValue: Union[int, float]
+          
+      class TradeStrategy(BaseModel):
+          tradeObjects: List[TradeObject]
+          iteration: Literal["once", "per_day", "per_week", "per_month"]
+          ifBlocks: List[IfBlock]
+          thenBlock: ThenBlock
+
       You may not alter keys inside analyzer, only the values (e.g. simulate ROI change).
       JSON input:  ${tradingBotJson}.
       Return only the improved JSON. Stop-losses should be implemented using the same logic structure (e.g. a new tradeStrategy that sells a portion of holdings if the price falls below a certain threshold after a buy). Time-based logic can be handled by modifying or setting timeframe_in_seconds. `
