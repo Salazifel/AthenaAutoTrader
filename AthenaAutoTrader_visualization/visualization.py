@@ -2,6 +2,7 @@ from matplotlib.ticker import ScalarFormatter
 import matplotlib.pyplot as plt
 import json
 from datetime import datetime
+import os
 
 
 def plot_total_assets(total_value_file, cash_file):
@@ -60,8 +61,8 @@ def plot_total_assets(total_value_file, cash_file):
     plt.savefig("total_asset_over_time.png", dpi=300)
 
 
-total_value = (
-    "/Users/hyeeun/Documents/HackUPC/AthenaAutoTrader/tradeStrategyPortfolioValue.json"
-)
-cash = "/Users/hyeeun/Documents/HackUPC/AthenaAutoTrader/tradeStrategyCashLogs.json"
-plot_total_assets(total_value, cash)
+DATA_DIR = os.path.join(os.path.dirname(__file__))
+
+total_value_file = os.path.join(DATA_DIR, "tradeStrategyPortfolioValue.json")
+cash_file = os.path.join(DATA_DIR, "tradeStrategyCashLogs.json")
+plot_total_assets(total_value_file, cash_file)
