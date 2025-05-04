@@ -122,7 +122,7 @@ export default function AssetChart() {
               },
             },
             y: {
-              beginAtZero: true,
+              beginAtZero: false,
               title: {
                 display: true,
                 text: "USD Value",

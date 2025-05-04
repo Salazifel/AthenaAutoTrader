@@ -19,6 +19,81 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [analysisStrategy, setAnalysisStrategy] = useState("");
 
+  const handleAnalyzeTriggered = (strategy) => {
+    try {
+      const strategyJson = typeof strategy === 'string' ? JSON.parse(strategy) : strategy;
+      if (strategyJson.analyzer.startDateTime) {
+        strategyJson.analyzer.startDateTime = new Date(strategyJson.analyzer.startDateTime);
+        if (isNaN(strategyJson.analyzer.startDateTime.getTime())) {
+          throw new Error("Invalid start date");
+        }
+      }
+      
+      if (strategyJson.analyzer.endDateTime) {
+        strategyJson.analyzer.endDateTime = new Date(strategyJson.analyzer.endDateTime);
+        if (isNaN(strategyJson.analyzer.endDateTime.getTime())) {
+          throw new Error("Invalid end date");
+        }
+      }
+    
+      // Ensure end date is after start date
+      if (strategyJson.analyzer.endDateTime <= strategyJson.analyzer.startDateTime) {
+        throw new Error("End date must be after start date");
+      }
+      const tradeStrategies = strategyJson.tradeStrategies.map(strat => {
+        const tradeObjects = strat.tradeObjects.map(obj => 
+          createTradeObject(obj.shareName)
+        );
+        
+        const iteration = 'per_day';
+        
+        const ifBlocks = strat.ifBlocks.map(block => 
+          createIfBlock(
+            block.objectToConsider,
+            block.comparisonSymbol,
+            block.value,
+            block.timeframe_in_seconds
+          )
+        );
+        
+        const thenBlock = createThenBlock(
+          strat.thenBlock.action,
+          strat.thenBlock.unitType,
+          strat.thenBlock.unitValue
+        );
+        
+        return createTradeStrategy(tradeObjects, iteration, ifBlocks, thenBlock);
+      });
+      
+      const analyzer = createAnalyzer(
+        strategyJson.analyzer.startDateTime,
+        strategyJson.analyzer.endDateTime,
+        strategyJson.analyzer.interestRate,
+        strategyJson.analyzer.costPerTrade
+      );
+      
+      const collector = createTradeStrategyCollector(
+        tradeStrategies,
+        strategyJson.initialBudget,
+        analyzer
+      );
+
+      const result = collector.executeTradeStrategy();
+      
+      console.log("Created strategy collector:", collector);
+
+
+      
+      setAiOutput(JSON.stringify(strategyJson, null, 2));
+      setAnalysisStrategy(JSON.stringify(strategyJson, null, 2));
+      
+    } catch (error) {
+      console.error("Error processing strategy:", error);
+      setAiOutput("Error processing strategy: " + error.message);
+    }
+  };
+
+  
   const handleClick = async () => {
     const tradingBotJson = "{\n \"tradeStrategies\": [\n {\n \"tradeObjects\": [\n {\n \"shareName\": \"AAPL\"\n }\n ],\n \"iteration\": \"once\",\n \"ifBlocks\": [\n {\n \"objectToConsider\": \"price\",\n \"comparisonSymbol\": \">\",\n \"value\": 100,\n \"timeframe_in_seconds\": \"0\"\n }\n ],\n \"thenBlock\": {\n \"action\": \"buy\",\n \"unitType\": \"%\",\n \"unitValue\": 10\n }\n },\n {\n \"tradeObjects\": [\n {\n \"shareName\": \"AAPL\"\n }\n ],\n \"iteration\": \"once\",\n \"ifBlocks\": [\n {\n \"objectToConsider\": \"price\",\n \"comparisonSymbol\": \"<\",\n \"value\": 150,\n \"timeframe_in_seconds\": \"0\"\n }\n ],\n \"thenBlock\": {\n \"action\": \"sell\",\n \"unitType\": \"%\",\n \"unitValue\": 5\n }\n }\n ],\n \"analyzer\": {\n \"startDateTime\": \"2023-01-01T00:00:00.000Z\",\n \"endDateTime\": \"2023-12-31T00:00:00.000Z\",\n \"interestRate\": 0.05,\n \"costPerTrade\": 0.02,\n \"taxOnProfit\": 0,\n \"outputLog\": [],\n \"otherAnalyzers\": [],\n \"roi\": 0,\n \"annualizedReturn\": 0,\n \"sharpeRatio\": 0,\n \"maxDrawdown\": 0,\n \"winRate\": 0,\n \"profitFactor\": 0\n },\n \"initialBudget\": 10000\n}";
     const userCreatedTradingBot = `
@@ -118,85 +193,13 @@ export default function App() {
       Return only the improved JSON. Stop-losses should be implemented using the same logic structure (e.g. a new tradeStrategy that sells a portion of holdings if the price falls below a certain threshold after a buy). Time-based logic can be handled by modifying or setting timeframe_in_seconds. `
     , true);
     
-      if (typeof aiResponse === "string") {
-        setAiOutput("No response from Gemini");
-      } else {
-        setAiOutput(JSON.stringify(aiResponse, null, 2));
-        setAnalysisStrategy(JSON.stringify(aiResponse, null, 2));
-        setIsModalOpen(true);
-      }
-    };
-
-    const handleAnalyzeTriggered = (strategy) => {
-      try {
-        const strategyJson = typeof strategy === 'string' ? JSON.parse(strategy) : strategy;
-        if (strategyJson.analyzer.startDateTime) {
-          strategyJson.analyzer.startDateTime = new Date(strategyJson.analyzer.startDateTime);
-          if (isNaN(strategyJson.analyzer.startDateTime.getTime())) {
-            throw new Error("Invalid start date");
-          }
-        }
-        
-        if (strategyJson.analyzer.endDateTime) {
-          strategyJson.analyzer.endDateTime = new Date(strategyJson.analyzer.endDateTime);
-          if (isNaN(strategyJson.analyzer.endDateTime.getTime())) {
-            throw new Error("Invalid end date");
-          }
-        }
-    
-        // Ensure end date is after start date
-        if (strategyJson.analyzer.endDateTime <= strategyJson.analyzer.startDateTime) {
-          throw new Error("End date must be after start date");
-        }
-        const tradeStrategies = strategyJson.tradeStrategies.map(strat => {
-          const tradeObjects = strat.tradeObjects.map(obj => 
-            createTradeObject(obj.shareName)
-          );
-          
-          const iteration = 'per_day';
-          
-          const ifBlocks = strat.ifBlocks.map(block => 
-            createIfBlock(
-              block.objectToConsider,
-              block.comparisonSymbol,
-              block.value,
-              block.timeframe_in_seconds
-            )
-          );
-          
-          const thenBlock = createThenBlock(
-            strat.thenBlock.action,
-            strat.thenBlock.unitType,
-            strat.thenBlock.unitValue
-          );
-          
-          return createTradeStrategy(tradeObjects, iteration, ifBlocks, thenBlock);
-        });
-        
-        const analyzer = createAnalyzer(
-          strategyJson.analyzer.startDateTime,
-          strategyJson.analyzer.endDateTime,
-          strategyJson.analyzer.interestRate,
-          strategyJson.analyzer.costPerTrade
-        );
-        
-        const collector = createTradeStrategyCollector(
-          tradeStrategies,
-          strategyJson.initialBudget,
-          analyzer
-        );
-
-        const result = collector.executeTradeStrategy();
-        
-        console.log("Created strategy collector:", collector);
-        
-        setAiOutput(JSON.stringify(strategyJson, null, 2));
-        setAnalysisStrategy(JSON.stringify(strategyJson, null, 2));
-        
-      } catch (error) {
-        console.error("Error processing strategy:", error);
-        setAiOutput("Error processing strategy: " + error.message);
-      }
+    //  if (typeof aiResponse === "string") {
+    //    setAiOutput("No response from Gemini");
+    //  } else {
+    //    setAiOutput(JSON.stringify(aiResponse, null, 2));
+    //    setAnalysisStrategy(JSON.stringify(aiResponse, null, 2));
+    //    setIsModalOpen(true);
+    //  }
     };
   
 
