@@ -30,7 +30,7 @@ export function parseStrategyToJson(strategyText) {
           
           currentStrategy = {
             tradeObjects: [{ shareName: stock }],
-            iteration: "once",
+            iteration: "per_day",
             ifBlocks: [{
               objectToConsider: "price",
               comparisonSymbol: direction === 'increases' ? '>' : '<',

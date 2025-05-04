@@ -117,7 +117,7 @@ export default function App() {
             createTradeObject(obj.shareName)
           );
           
-          const iteration = createIteration(strat.iteration);
+          const iteration = createIteration('per_day');
           
           const ifBlocks = strat.ifBlocks.map(block => 
             createIfBlock(
